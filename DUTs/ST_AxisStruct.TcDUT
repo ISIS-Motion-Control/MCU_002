@@ -25,7 +25,8 @@ STRUCT
 	Axis				:	AXIS_REF;		//Link NC axis to this
 	
 	masterAxis			:	ST_GearAxis; 	//Single master axis
-	slaveAxis			:	ST_GearAxis :=(index:=0, ratio:=0) ;	//Linking single slave axes
+	//slaveAxis			:	ARRAY [1..GVL.axisNum]OF ST_GearAxis :=(index:=0, ratio:=0) ;	//Linking single slave axes
+	slaveAxisRatio		:	ARRAY [1..GVL.axisNum] OF LREAL;
 	
 		
 //////Extra things of original ISIS Structure/////

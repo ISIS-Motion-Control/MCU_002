@@ -18,6 +18,7 @@ VAR
 	sVersion: STRING:='1.0.4';	
 	masterAxis			:	ST_GearAxis :=(index:=1, ratio:=0) ;
 	
+	i: UINT;
 END_VAR
 VAR_INPUT
 
@@ -78,12 +79,12 @@ fbGearOut.Execute:=FALSE;
 stAxisStruct.status.bFwEnabled:= stAxisStruct.inputs.bLimitFwd;
 stAxisStruct.status.bBwEnabled:= stAxisStruct.inputs.bLimitBwd;
 
-
-
-IF (stAxisStruct.slaveAxis.index>0) THEN
-	stAxisStruct.status.bFwEnabled:=stAxisStruct.status.bFwEnabled AND SEL(stAxisStruct.slaveAxis.ratio>0, GVL.axes[stAxisStruct.slaveAxis.index].inputs.bLimitBwd, GVL.axes[stAxisStruct.slaveAxis.index].inputs.bLimitFwd);
-	stAxisStruct.status.bBwEnabled:=stAxisStruct.status.bBwEnabled AND SEL(stAxisStruct.slaveAxis.ratio>0, GVL.axes[stAxisStruct.slaveAxis.index].inputs.bLimitFwd, GVL.axes[stAxisStruct.slaveAxis.index].inputs.bLimitBwd);
-END_IF
+FOR i:= 1 TO GVL.axisNum DO
+	IF (stAxisStruct.slaveAxisRatio[i]<>0) THEN
+		stAxisStruct.status.bFwEnabled:=stAxisStruct.status.bFwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bBwEnabled, GVL.axes[i].status.bFwEnabled);
+		stAxisStruct.status.bBwEnabled:=stAxisStruct.status.bBwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bFwEnabled, GVL.axes[i].status.bBwEnabled);
+	END_IF
+END_FOR
 
 
 (*Power*)
@@ -150,17 +151,15 @@ CASE stAxisStruct.control.eCommand OF
 			masterAxis.Ratio:= stAxisStruct.masterAxis.ratio;
 		END_IF
 		
-		IF fbGearIn.InGear AND (GVL.axes[masterAxis.Index].slaveAxis.index=0) THEN	//only update index and ratios on new gearIns, change of ratio requires gearOut
-			GVL.axes[masterAxis.Index].slaveAxis.index:=GVL.iAxis;	//Link current axis as a slave of master
-			GVL.axes[masterAxis.Index].slaveAxis.ratio:=masterAxis.Ratio;
+		IF fbGearIn.InGear AND (GVL.axes[masterAxis.Index].slaveAxisRatio[GVL.iAxis]=0) THEN	//only update index and ratios on new gearIns, change of ratio requires gearOut
+			GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=masterAxis.ratio;
 		END_IF
 	
 	MotionFunctions.GearOut:
 		fbGearOut.Execute:=			stAxisStruct.control.bExecute;
 		
 		IF fbGearOut.Done THEN
-			GVL.axes[masterAxis.index].slaveAxis.index:=0;
-			GVL.axes[masterAxis.index].slaveAxis.ratio:=0;
+			GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=0; //Clear slave ratio from master axis slave array
 		END_IF
 	
 	MotionFunctions.MultiGearIn:
@@ -264,12 +263,11 @@ END_IF
       <LineId Id="2446" Count="0" />
       <LineId Id="1627" Count="1" />
       <LineId Id="2515" Count="0" />
-      <LineId Id="2522" Count="1" />
-      <LineId Id="2519" Count="0" />
-      <LineId Id="2518" Count="0" />
-      <LineId Id="2520" Count="0" />
-      <LineId Id="2525" Count="0" />
-      <LineId Id="2521" Count="0" />
+      <LineId Id="2595" Count="0" />
+      <LineId Id="2591" Count="0" />
+      <LineId Id="2586" Count="2" />
+      <LineId Id="2585" Count="0" />
+      <LineId Id="2594" Count="0" />
       <LineId Id="2517" Count="0" />
       <LineId Id="2516" Count="0" />
       <LineId Id="1629" Count="0" />
@@ -316,13 +314,14 @@ END_IF
       <LineId Id="2574" Count="0" />
       <LineId Id="2572" Count="0" />
       <LineId Id="2569" Count="0" />
-      <LineId Id="2577" Count="2" />
+      <LineId Id="2577" Count="0" />
+      <LineId Id="2583" Count="0" />
       <LineId Id="2576" Count="0" />
       <LineId Id="2361" Count="1" />
       <LineId Id="2498" Count="0" />
       <LineId Id="2582" Count="0" />
-      <LineId Id="2511" Count="1" />
-      <LineId Id="2514" Count="0" />
+      <LineId Id="2511" Count="0" />
+      <LineId Id="2584" Count="0" />
       <LineId Id="2513" Count="0" />
       <LineId Id="2444" Count="0" />
       <LineId Id="2364" Count="0" />
