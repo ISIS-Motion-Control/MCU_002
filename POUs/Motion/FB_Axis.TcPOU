@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
   <POU Name="FB_Axis" Id="{45901cd0-c6d2-4114-b7cf-de832171219f}" SpecialFunc="None">
     <Declaration><![CDATA[///#########################################################
 ///Function block to run a virtual drive with Nc
@@ -151,34 +151,34 @@ stAxisStruct.status.bBusy:=stAxisStruct.Axis.Status.HasJob;
 
 (*Error from functions and Nc*)
 IF fbPower.Error AND fbPower.Active THEN
-	stAxisStruct.status.bError:=fbPower.Enable;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbPower.ErrorID;
 ELSIF fbHalt.Error AND fbHalt.Active THEN
-	stAxisStruct.status.bError:=fbHalt.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHalt.ErrorID;
 ELSIF fbJog.Error THEN
-	stAxisStruct.status.bError:=fbJog.JogForward OR fbJog.JogBackwards;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbJog.ErrorID;
 ELSIF fbMoveVelocity.Error THEN
-	stAxisStruct.status.bError:=fbMoveVelocity.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveVelocity.ErrorID;
 ELSIF fbMoveRelative.Error THEN
-	stAxisStruct.status.bError:=fbMoveRelative.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveRelative.ErrorID;
 ELSIF fbMoveAbsolute.Error THEN
-	stAxisStruct.status.bError:=fbMoveAbsolute.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveAbsolute.ErrorID;
 ELSIF fbMoveModulo.Error THEN
-	stAxisStruct.status.bError:=fbMoveModulo.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveModulo.ErrorID;
 ELSIF fbHome.bError THEN
-	stAxisStruct.status.bError:=fbHome.bError;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHome.nErrorID;
 ELSIF fbGearInDyn.Error THEN
-	stAxisStruct.status.bError:=fbGearInDyn.Enable;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearInDyn.ErrorID;
 ELSIF fbGearOut.Error and stAxisStruct.Axis.Status.Coupled THEN
-	stAxisStruct.status.bError:=fbGearOut.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearOut.ErrorID;
 ELSIF stAxisStruct.Axis.Status.Error  THEN
 	stAxisStruct.status.bError:=TRUE;
