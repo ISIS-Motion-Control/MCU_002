@@ -196,33 +196,38 @@ IF stAxisStruct.status.bError and not stAxisStruct.control.bReset THEN
 	stAxisStruct.status.nErrorID:=stAxisStruct.status.nErrorID;
 ELSIF fbPower.Error AND fbPower.Active THEN
 	stAxisStruct.status.bError:=fbPower.Enable;
+IF fbPower.Error AND fbPower.Active THEN
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbPower.ErrorID;
 ELSIF fbHalt.Error AND fbHalt.Active THEN
-	stAxisStruct.status.bError:=fbHalt.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHalt.ErrorID;
 ELSIF fbJog.Error THEN
-	stAxisStruct.status.bError:=fbJog.JogForward OR fbJog.JogBackwards;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbJog.ErrorID;
 ELSIF fbMoveVelocity.Error THEN
-	stAxisStruct.status.bError:=fbMoveVelocity.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveVelocity.ErrorID;
 ELSIF fbMoveRelative.Error THEN
-	stAxisStruct.status.bError:=fbMoveRelative.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveRelative.ErrorID;
 ELSIF fbMoveAbsolute.Error THEN
-	stAxisStruct.status.bError:=fbMoveAbsolute.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveAbsolute.ErrorID;
 ELSIF fbMoveModulo.Error THEN
-	stAxisStruct.status.bError:=fbMoveModulo.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveModulo.ErrorID;
 ELSIF fbHome.bError THEN
-	stAxisStruct.status.bError:=fbHome.bError;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHome.nErrorID;
 ELSIF fbGearIn.Error THEN
-	stAxisStruct.status.bError:=fbGearIn.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
+ELSIF fbGearInDyn.Error THEN
+	stAxisStruct.status.bError:=TRUE;
+	stAxisStruct.status.nErrorId:=fbGearInDyn.ErrorID;
 ELSIF fbGearOut.Error and stAxisStruct.Axis.Status.Coupled THEN
-	stAxisStruct.status.bError:=fbGearOut.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearOut.ErrorID;
 ELSIF stAxisStruct.Axis.Status.Error  THEN
 	stAxisStruct.status.bError:=stAxisStruct.Axis.Status.Error;
