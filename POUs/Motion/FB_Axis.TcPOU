@@ -44,22 +44,30 @@ VAR
 	fbGearOut: MC_GearOut;
 	fbHome: FB_Homing;
 	fbExecuteRiseEdge: R_TRIG;
+	fbStopRiseEdge: R_TRIG;
+	fbResetRiseEdge: R_TRIG;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
-IF fbReset.Done AND NOT stAxisStruct.status.bError THEN
-	stAxisStruct.control.bReset:=FALSE;
+(*IF stAxisStruct.control.bExecute AND stAxisStruct.Axis.Status.HasJob THEN
+	stAxisStruct.control.bExecute:=TRUE;*)
+IF stAxisStruct.status.bError OR 
+		fbMoveModulo.Done OR
+		fbMoveRelative.Done OR	
+		fbMoveVelocity.Active THEN
+		stAxisStruct.control.bExecute:=FALSE;
 END_IF
 
-IF fbStop.Done AND stAxisStruct.Axis.Status.HasBeenStopped THEN
+
+IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.NotMoving THEN
 	stAxisStruct.control.bStop:=FALSE;
 END_IF
 
-IF stAxisStruct.Axis.Status.StandStill AND (fbMoveAbsolute.Done OR fbMoveModulo.Done OR fbMoveRelative.Done) THEN
-	stAxisStruct.control.bExecute:=FALSE;
+IF stAxisStruct.control.bReset AND NOT stAxisStruct.status.bError THEN
+	stAxisStruct.control.bReset:=FALSE;
 END_IF
- 
+
 ////Call of all MC Instances//////
 
 fbPower(Axis:=stAxisStruct.Axis);
@@ -107,9 +115,10 @@ END_FOR
 (*Stop*)	
 	fbStop.Execute:= stAxisStruct.control.bStop;
 	fbStop.Deceleration:= stAxisStruct.config.fDeceleration;
+
 				
 (*Reset*)
-	fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.Axis.Status.Error;
+	fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.status.bError;
 
 CASE stAxisStruct.control.eCommand OF
 	MotionFunctions.MoveAbsolute:
@@ -127,8 +136,8 @@ CASE stAxisStruct.control.eCommand OF
 		fbMoveRelative.Deceleration:=stAxisStruct.config.fDeceleration;
 				
 	MotionFunctions.Jog:
-		fbJog.JogForward:=stAxisStruct.control.bJogFwd AND NOT stAxisStruct.control.bExecute;
-		fbJog.JogBackwards:=stAxisStruct.control.bJogBwd AND NOT stAxisStruct.control.bExecute;
+		fbJog.JogForward:=stAxisStruct.control.bJogFwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
+		fbJog.JogBackwards:=stAxisStruct.control.bJogBwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
 		fbJog.Mode:=0;
 		fbJog.Velocity:=stAxisStruct.config.fVelocity;
 		fbJog.Acceleration:=stAxisStruct.config.fAcceleration;
@@ -186,7 +195,6 @@ CASE stAxisStruct.control.eCommand OF
 				
 END_CASE			
 
-
 (*Busy*)
 stAxisStruct.status.bBusy:=stAxisStruct.Axis.Status.HasJob;
 
@@ -196,7 +204,7 @@ IF stAxisStruct.status.bError and not stAxisStruct.control.bReset THEN
 	stAxisStruct.status.nErrorID:=stAxisStruct.status.nErrorID;
 ELSIF fbPower.Error AND fbPower.Active THEN
 	stAxisStruct.status.bError:=fbPower.Enable;
-IF fbPower.Error AND fbPower.Active THEN
+ELSIF fbPower.Error AND fbPower.Active THEN
 	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbPower.ErrorID;
 ELSIF fbHalt.Error AND fbHalt.Active THEN
@@ -223,9 +231,9 @@ ELSIF fbHome.bError THEN
 ELSIF fbGearIn.Error THEN
 	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
-ELSIF fbGearInDyn.Error THEN
+ELSIF fbGearIn.Error THEN
 	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbGearInDyn.ErrorID;
+	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
 ELSIF fbGearOut.Error and stAxisStruct.Axis.Status.Coupled THEN
 	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearOut.ErrorID;
@@ -253,14 +261,19 @@ END_IF
     </Implementation>
     <LineIds Name="FB_Axis">
       <LineId Id="2448" Count="0" />
-      <LineId Id="2658" Count="0" />
-      <LineId Id="2657" Count="0" />
-      <LineId Id="2660" Count="1" />
-      <LineId Id="2663" Count="0" />
-      <LineId Id="2666" Count="3" />
-      <LineId Id="2662" Count="0" />
-      <LineId Id="2670" Count="0" />
-      <LineId Id="2664" Count="0" />
+      <LineId Id="2750" Count="0" />
+      <LineId Id="2742" Count="0" />
+      <LineId Id="2752" Count="0" />
+      <LineId Id="2754" Count="0" />
+      <LineId Id="2757" Count="3" />
+      <LineId Id="2756" Count="0" />
+      <LineId Id="2753" Count="0" />
+      <LineId Id="2743" Count="0" />
+      <LineId Id="2732" Count="1" />
+      <LineId Id="2731" Count="0" />
+      <LineId Id="2728" Count="0" />
+      <LineId Id="2726" Count="1" />
+      <LineId Id="2725" Count="0" />
       <LineId Id="2659" Count="0" />
       <LineId Id="2185" Count="0" />
       <LineId Id="2203" Count="0" />
@@ -300,9 +313,10 @@ END_IF
       <LineId Id="1921" Count="0" />
       <LineId Id="1925" Count="1" />
       <LineId Id="2205" Count="0" />
+      <LineId Id="2719" Count="0" />
       <LineId Id="2207" Count="0" />
       <LineId Id="2209" Count="0" />
-      <LineId Id="2376" Count="0" />
+      <LineId Id="2762" Count="0" />
       <LineId Id="1657" Count="0" />
       <LineId Id="2366" Count="0" />
       <LineId Id="2220" Count="0" />
@@ -354,7 +368,6 @@ END_IF
       <LineId Id="2339" Count="0" />
       <LineId Id="2309" Count="0" />
       <LineId Id="2216" Count="0" />
-      <LineId Id="1674" Count="0" />
       <LineId Id="1733" Count="0" />
       <LineId Id="1936" Count="1" />
       <LineId Id="1941" Count="1" />
@@ -368,6 +381,8 @@ END_IF
       <LineId Id="1993" Count="8" />
       <LineId Id="2272" Count="0" />
       <LineId Id="1934" Count="0" />
+      <LineId Id="202" Count="3" />
+      <LineId Id="2" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
