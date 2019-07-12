@@ -50,15 +50,14 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
-(*IF stAxisStruct.control.bExecute AND stAxisStruct.Axis.Status.HasJob THEN
-	stAxisStruct.control.bExecute:=TRUE;*)
-IF stAxisStruct.status.bError OR 
+(*IF stAxisStruct.status.bError OR 
+		fbMoveAbsolute.Done OR
 		fbMoveModulo.Done OR
 		fbMoveRelative.Done OR	
-		fbMoveVelocity.Active THEN
+		fbStop.Done OR
+		stAxisStruct.Axis.Status.Moving THEN
 		stAxisStruct.control.bExecute:=FALSE;
-END_IF
-
+END_IF*)
 
 IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.NotMoving THEN
 	stAxisStruct.control.bStop:=FALSE;
@@ -198,16 +197,21 @@ END_CASE
 (*Busy*)
 stAxisStruct.status.bBusy:=stAxisStruct.Axis.Status.HasJob;
 
+(*Done*)
+IF fbMoveAbsolute.Done OR fbMoveModulo.Done OR fbMoveRelative.Done THEN
+		stAxisStruct.status.bDone:=TRUE;
+ELSIF stAxisStruct.Axis.Status.HasJob THEN
+		stAxisStruct.status.bDone:=FALSE;
+END_IF
+
 (*Error from functions and Nc*)
 IF stAxisStruct.status.bError and not stAxisStruct.control.bReset THEN 
 	stAxisStruct.status.bError:=stAxisStruct.status.bError;
 	stAxisStruct.status.nErrorID:=stAxisStruct.status.nErrorID;
-ELSIF fbPower.Error AND fbPower.Active THEN
-	stAxisStruct.status.bError:=fbPower.Enable;
-ELSIF fbPower.Error AND fbPower.Active THEN
+ELSIF fbPower.Error THEN
 	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbPower.ErrorID;
-ELSIF fbHalt.Error AND fbHalt.Active THEN
+ELSIF fbHalt.Error THEN
 	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHalt.ErrorID;
 ELSIF fbJog.Error THEN
@@ -262,12 +266,9 @@ END_IF
     <LineIds Name="FB_Axis">
       <LineId Id="2448" Count="0" />
       <LineId Id="2750" Count="0" />
-      <LineId Id="2742" Count="0" />
-      <LineId Id="2752" Count="0" />
-      <LineId Id="2754" Count="0" />
-      <LineId Id="2757" Count="3" />
+      <LineId Id="2782" Count="4" />
+      <LineId Id="2759" Count="1" />
       <LineId Id="2756" Count="0" />
-      <LineId Id="2753" Count="0" />
       <LineId Id="2743" Count="0" />
       <LineId Id="2732" Count="1" />
       <LineId Id="2731" Count="0" />
@@ -370,10 +371,14 @@ END_IF
       <LineId Id="2216" Count="0" />
       <LineId Id="1733" Count="0" />
       <LineId Id="1936" Count="1" />
+      <LineId Id="2770" Count="0" />
+      <LineId Id="2769" Count="0" />
+      <LineId Id="2772" Count="0" />
+      <LineId Id="2777" Count="2" />
+      <LineId Id="2771" Count="0" />
       <LineId Id="1941" Count="1" />
       <LineId Id="2651" Count="2" />
-      <LineId Id="2650" Count="0" />
-      <LineId Id="1944" Count="31" />
+      <LineId Id="1945" Count="30" />
       <LineId Id="1979" Count="3" />
       <LineId Id="2501" Count="0" />
       <LineId Id="1992" Count="0" />

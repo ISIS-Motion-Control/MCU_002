@@ -5,7 +5,6 @@
 	stErrorSystemCom	: ST_ErrorSystem;
 	axes			:	ARRAY [1..GVL.axisNum] OF ST_AxisStruct;	//Global array of axisControl structure for holding axis parameters and controls
 	iAxis			:	UINT;	 									//Index for running axis
-	//indexer			:	ARRAY [1..GVL.axisNum] OF IndexerStruct;
 	
 END_VAR
 
