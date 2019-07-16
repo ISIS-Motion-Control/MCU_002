@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
+  <POU Name="FB_Homing2" Id="{e8b732be-06ce-4dd5-944d-e7ad6eae8e67}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Homing2
+VAR_INPUT
+	bExecute: BOOL;
+	bReset: BOOL;
+	nHomeProc: UINT;
+	bLimitBwd: BOOL;
+	bLimitFwd: BOOL;
+	bEncLatch: BOOL;
+	bHomeSensor: BOOL;
+	fHomePosition: LREAL;
+END_VAR
+VAR_IN_OUT
+	Axis: AXIS_REF;
+END_VAR
+VAR_OUTPUT
+	bHomed:BOOL;
+	bError: BOOL;
+	nErrorId: UDINT;
+END_VAR
+VAR
+	nHomeProcLocal: UINT := 0;
+    nHomingState: INT := 0;
+	fbExecuteRiseEdge: R_TRIG;
+	fbHomingParameter: MC_HomingParameter;
+	StOptions:	ST_Home_Options;
+	StOptions2: ST_Home_Options2;
+	StOptions3: ST_Home_Options3;
+	StOptions4: ST_Home_Options4;
+	fbStepLimitSwitch: MC_StepLimitSwitch;
+	fbStepAbsoluteSwitch: MC_StepAbsoluteSwitch;
+	fbStepReferencePulse: MC_StepReferencePulse;
+	fbHomeDirect: MC_HomeDirect;
+	fbAbortHoming: MC_AbortHoming;
+	fbFinishHoming: MC_FinishHoming;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bReset THEN	
+	bError:=FALSE;
+	nErrorId:=0;
+	//fbStepLimitSwitch.Execute:=FALSE;
+	nHomingState:=0;
+END_IF
+
+//Reset at rinsing edge of bExecute
+fbExecuteRiseEdge(CLK:=bExecute);
+IF fbExecuteRiseEdge.Q THEN
+  nHomeProcLocal:=nHomeProc; //Ensure that nHomeProc is not changed during sequence (nCmdData will only be read at a rising edge of bExecute)
+  //Check if valid nCmdDataLocal
+  CASE nHomeProcLocal OF  	
+    1:
+    2:
+    3:
+    4:
+	5:
+	6:
+    15:
+    ELSE //nCmdData not valid	
+      bError:=TRUE;
+      nErrorId:=16#4FFF;   
+  END_CASE
+END_IF
+
+CASE nHomeProcLocal OF  	
+   1: // Home to low limit switch
+	   CASE nHomingState OF
+		  0: 
+			fbStepLimitSwitch.Direction:=3; // mcNegativeDirection := 3
+			fbStepLimitSwitch.LimitSwitchMode:=3; //:=mcRisingEdge := 3
+			nHomingState:=nHomingState+1;
+	 	  1:
+			fbStepLimitSwitch.Execute:=TRUE;
+			IF fbStepLimitSwitch.Busy THEN
+				nHomingState:=nHomingState+1;
+			END_IF
+		  2:
+		  	IF fbStepLimitSwitch.Done THEN
+				nHomingState:=nHomingState+1;
+				fbFinishHoming.Execute:=TRUE;
+			END_IF
+		END_CASE
+	2: // Home to high limit switch
+	   CASE nHomingState OF
+		  0: 
+			fbStepLimitSwitch.Direction:=1; // mcPositiveDirection := 3
+			fbStepLimitSwitch.LimitSwitchMode:=3; // mcRisingEdge := 3
+			nHomingState:=nHomingState+1;
+	 	  1:
+			fbStepLimitSwitch.Execute:=TRUE;
+		END_CASE
+	3: // Home on bHomeSensor via bLimitBwd
+	4: // Home on bHomeSensor via bLimitFwd	   
+	5: // Home on Enc Latch via LimtBwd   
+	6: // Home on Enc Latch via bLimitFwd
+	13: // Home to zero pulse on encoder from positive direction
+	14: // Home to zero pulse on encoder from negative direction
+	15: // Set current position without moving
+END_CASE
+
+StOptions4.DisableDriveAccess:=TRUE;
+fbStepLimitSwitch(
+	Axis:= Axis, 
+	Parameter:= fbHomingParameter, 
+	Execute:= , 
+	Direction:= , 
+	LimitSwitchMode:= , 
+	LimitSwitchSignal:= , 
+	Velocity:= 10, // *********** NEED TO CHANGE **************
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	SetPosition:= , 
+	TimeLimit:= , 
+	DistanceLimit:= , 
+	TorqueLimit:= , 
+	BufferMode:= , 
+	Options:= StOptions4, 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbStepAbsoluteSwitch(
+	Axis:= Axis, 
+	Parameter:= fbHomingParameter, 
+	Execute:= , 
+	Direction:= , 
+	SwitchMode:= , 
+	ReferenceSignal:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	SetPosition:= , 
+	TimeLimit:= , 
+	DistanceLimit:= , 
+	TorqueLimit:= , 
+	PositiveLimitSwitch:= , 
+	NegativeLimitSwitch:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbStepReferencePulse(
+	Axis:= Axis, 
+	Parameter:= fbHomingParameter, 
+	Execute:= , 
+	Direction:= , 
+	ReferenceSignal:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	SetPosition:= , 
+	TimeLimit:= , 
+	DistanceLimit:= , 
+	TorqueLimit:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbHomeDirect(
+	Axis:= Axis, 
+	Parameter:= fbHomingParameter, 
+	Execute:= , 
+	SetPosition:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+StOptions2.DisableDriveAccess:=TRUE;
+fbFinishHoming(
+	Axis:= Axis, 
+	Parameter:= fbHomingParameter, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= StOptions2, 
+	Done=> , 
+	Busy=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbAbortHoming(
+	Axis:= Axis, 
+	Parameter:= fbHomingParameter, 
+	Execute:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Homing2">
+      <LineId Id="34" Count="2" />
+      <LineId Id="690" Count="1" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="49" Count="4" />
+      <LineId Id="57" Count="13" />
+      <LineId Id="85" Count="1" />
+      <LineId Id="88" Count="2" />
+      <LineId Id="394" Count="0" />
+      <LineId Id="513" Count="0" />
+      <LineId Id="530" Count="0" />
+      <LineId Id="395" Count="0" />
+      <LineId Id="514" Count="0" />
+      <LineId Id="692" Count="0" />
+      <LineId Id="677" Count="0" />
+      <LineId Id="693" Count="0" />
+      <LineId Id="678" Count="2" />
+      <LineId Id="682" Count="0" />
+      <LineId Id="681" Count="0" />
+      <LineId Id="398" Count="0" />
+      <LineId Id="515" Count="0" />
+      <LineId Id="592" Count="6" />
+      <LineId Id="591" Count="0" />
+      <LineId Id="584" Count="3" />
+      <LineId Id="590" Count="0" />
+      <LineId Id="589" Count="0" />
+      <LineId Id="588" Count="0" />
+      <LineId Id="399" Count="0" />
+      <LineId Id="688" Count="1" />
+      <LineId Id="461" Count="21" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="532" Count="0" />
+      <LineId Id="535" Count="23" />
+      <LineId Id="533" Count="0" />
+      <LineId Id="559" Count="0" />
+      <LineId Id="562" Count="20" />
+      <LineId Id="560" Count="0" />
+      <LineId Id="670" Count="0" />
+      <LineId Id="646" Count="11" />
+      <LineId Id="599" Count="0" />
+      <LineId Id="683" Count="1" />
+      <LineId Id="614" Count="14" />
+      <LineId Id="612" Count="0" />
+      <LineId Id="659" Count="0" />
+      <LineId Id="661" Count="8" />
+      <LineId Id="660" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
