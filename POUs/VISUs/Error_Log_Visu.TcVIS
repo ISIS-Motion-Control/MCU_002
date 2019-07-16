@@ -397,7 +397,7 @@
                       <o n="Value" t="DataVariableInformation">
                         <v n="DataArrayType">"ARRAY [0..(cSizeOfErrorData - 1)] OF ST_ErrorEntry"</v>
                         <v n="ColumnCount">7</v>
-                        <v n="RowCount">128</v>
+                        <v n="RowCount">256</v>
                         <v n="FirstColumnIndex">0</v>
                         <v n="FirstRowIndex">0</v>
                         <a n="ColumnTypes" cet="TypeClass">
@@ -422,7 +422,7 @@
                         <a n="Bounds" cet="ArrayBound">
                           <o>
                             <v n="Identifier">"(cSizeOfErrorData - 1)"</v>
-                            <v n="Value">127</v>
+                            <v n="Value">255</v>
                           </o>
                         </a>
                         <v n="ArrayType" t="EArrayType">Invalid</v>
@@ -614,31 +614,31 @@
                     </o>
                     <o>
                       <v n="Id">2318311169L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">1268793537L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">3527550656L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">332200192L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">989326467L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">4219024195L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">1654347074L</v>
-                      <v n="Value">128</v>
+                      <v n="Value">256</v>
                     </o>
                     <o>
                       <v n="Id">3146216842L</v>
@@ -723,10 +723,6 @@
                     <o>
                       <v n="Id">4072227898L</v>
                       <v n="Value">false</v>
-                    </o>
-                    <o>
-                      <v n="Id">3736079596L</v>
-                      <v n="Value">"712"</v>
                     </o>
                   </l>
                 </o>
@@ -890,7 +886,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"945"</v>
+                      <v n="Value">"702"</v>
                     </o>
                   </l>
                 </o>
@@ -1068,7 +1064,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"976"</v>
+                      <v n="Value">"703"</v>
                     </o>
                   </l>
                 </o>
@@ -1078,7 +1074,7 @@
                 <v n="VisualElementIdentifier">"GenElemInst_4"</v>
                 <n n="VisualElementOfflinePaintCommands" />
                 <n n="VisualElementFrameInformation" />
-                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="IInputAction[]">
+                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="STSnippetInputAction[]">
                   <v>OnMouseUp</v>
                   <a cet="STSnippetInputAction">
                     <o>
@@ -1249,7 +1245,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"284"</v>
+                      <v n="Value">"704"</v>
                     </o>
                   </l>
                 </o>
@@ -1370,7 +1366,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"648"</v>
+                      <v n="Value">"705"</v>
                     </o>
                   </l>
                 </o>
@@ -1531,7 +1527,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"500"</v>
+                      <v n="Value">"706"</v>
                     </o>
                   </l>
                 </o>
@@ -1541,7 +1537,7 @@
                 <v n="VisualElementIdentifier">"GenElemInst_8"</v>
                 <n n="VisualElementOfflinePaintCommands" />
                 <n n="VisualElementFrameInformation" />
-                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="IInputAction[]">
+                <d n="VisualElementInputActions" t="Hashtable" ckt="String" cvt="InputBoxInputAction[]">
                   <v>OnMouseUp</v>
                   <a cet="InputBoxInputAction">
                     <o>
@@ -2022,10 +2018,10 @@
                                 <v>TL_ElementProperties.Points</v>
                                 <v>DescriptionUseFromParent</v>
                                 <v></v>
-                                <v>''NORMAL__COMMENT</v>
-                                <v> There is no more information than the parent provides</v>
                                 <v>DefaultArraySize</v>
                                 <v>500</v>
+                                <v>''NORMAL__COMMENT</v>
+                                <v> There is no more information than the parent provides</v>
                               </d>
                               <v n="ConvDone">true</v>
                             </o>
@@ -2078,6 +2074,8 @@
                         <o n="TypeNodeAttributes" t="TypeNodeAttributes2">
                           <v n="AttrFlags">81920UL</v>
                           <d n="TypeNodeAttributesData" t="CaseInsensitiveHashtable" ckt="String" cvt="String">
+                            <v>PolygonPoints</v>
+                            <v></v>
                             <v>DescriptionTextId</v>
                             <v>TL_ElementProperties.Desc_StaticLinePos</v>
                             <v>DisplayTextId</v>
@@ -2092,8 +2090,6 @@
                             <v>visu_elemdev</v>
                             <v>Storable</v>
                             <v>True</v>
-                            <v>PolygonPoints</v>
-                            <v></v>
                           </d>
                           <v n="ConvDone">true</v>
                         </o>
@@ -2302,7 +2298,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"469"</v>
+                      <v n="Value">"707"</v>
                     </o>
                   </l>
                 </o>
@@ -2423,7 +2419,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"632"</v>
+                      <v n="Value">"708"</v>
                     </o>
                   </l>
                 </o>
@@ -2544,7 +2540,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"365"</v>
+                      <v n="Value">"709"</v>
                     </o>
                   </l>
                 </o>
@@ -2701,11 +2697,11 @@
                     </o>
                     <o>
                       <v n="Id">2477733581L</v>
-                      <v n="Value">"MAIN.fbErrorSystem.nNoError"</v>
+                      <v n="Value">"MAIN.fbErrorSystem.ErrorSystem.nNoError"</v>
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"500"</v>
+                      <v n="Value">"706"</v>
                     </o>
                   </l>
                 </o>
@@ -2866,7 +2862,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"500"</v>
+                      <v n="Value">"706"</v>
                     </o>
                   </l>
                 </o>
@@ -3027,7 +3023,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"500"</v>
+                      <v n="Value">"706"</v>
                     </o>
                   </l>
                 </o>
@@ -3148,7 +3144,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"339"</v>
+                      <v n="Value">"710"</v>
                     </o>
                   </l>
                 </o>
@@ -3269,7 +3265,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"489"</v>
+                      <v n="Value">"711"</v>
                     </o>
                   </l>
                 </o>
@@ -3430,7 +3426,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"500"</v>
+                      <v n="Value">"706"</v>
                     </o>
                   </l>
                 </o>
@@ -3591,7 +3587,7 @@
                     </o>
                     <o>
                       <v n="Id">823443203L</v>
-                      <v n="Value">"500"</v>
+                      <v n="Value">"706"</v>
                     </o>
                   </l>
                 </o>
@@ -3709,10 +3705,10 @@
               <d n="FbMethods" t="CaseInsensitiveHashtable_1" ckt="String" cvt="Guid">
                 <v>FB_Init</v>
                 <v>bd05a340-2ab6-4338-98db-d68f96c471d9</v>
-                <v>FB_Reinit</v>
-                <v>8f373791-2e96-4d5b-b3bf-7a5529152c93</v>
                 <v>FB_Exit</v>
                 <v>9f8a66e2-1da1-446b-8c22-251fb65555cf</v>
+                <v>FB_Reinit</v>
+                <v>8f373791-2e96-4d5b-b3bf-7a5529152c93</v>
               </d>
               <v n="FbName">"NotImportant"</v>
               <v n="FbGuid">{5d2e31a8-d359-4f5f-88ea-96c04b16ea9c}</v>
@@ -3810,8 +3806,8 @@
         <Type n="Guid">System.Guid</Type>
         <Type n="Hashtable">System.Collections.Hashtable</Type>
         <Type n="HotkeyConfiguration">{6b108d46-58af-4e41-a3f4-174d8f160cc4}</Type>
-        <Type n="IInputAction[]">_3S.CoDeSys.VisualElem.IInputAction[], VisualElem, Version=3.5.10.0, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="InputBoxInputAction">{e8e7e747-f76f-4dee-ab1c-b9637e41ac26}</Type>
+        <Type n="InputBoxInputAction[]">_3S.CoDeSys.VisualElem.InputBoxInputAction[], VisualElem.plugin, Version=3.5.10.32, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="Int16">System.Int16</Type>
         <Type n="Int32">System.Int32</Type>
         <Type n="Int64">System.Int64</Type>
@@ -3820,6 +3816,7 @@
         <Type n="String">System.String</Type>
         <Type n="StructuredTypeNode">{503c5b2e-e80e-4ee7-ae00-c5b93a62b1aa}</Type>
         <Type n="STSnippetInputAction">{6302d3fe-6ea5-4c42-819a-a9734a133b3d}</Type>
+        <Type n="STSnippetInputAction[]">_3S.CoDeSys.VisualElem.STSnippetInputAction[], VisualElem.plugin, Version=3.5.10.32, Culture=neutral, PublicKeyToken=null</Type>
         <Type n="TextDocument">{f3878285-8e4f-490b-bb1b-9acbb7eb04db}</Type>
         <Type n="TextLine">{a5de0b0b-1cb5-4913-ac21-9d70293ec00d}</Type>
         <Type n="TypeClass">{16f7aa24-038f-444e-9d81-b001bc091d35}</Type>
