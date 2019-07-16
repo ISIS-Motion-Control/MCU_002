@@ -50,22 +50,15 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
-(*IF stAxisStruct.status.bError OR 
-		fbMoveAbsolute.Done OR
-		fbMoveModulo.Done OR
-		fbMoveRelative.Done OR	
-		fbStop.Done OR
-		stAxisStruct.Axis.Status.Moving THEN
+IF stAxisStruct.status.bError OR 
+	fbMoveAbsolute.Done OR
+	fbMoveModulo.Done OR
+	fbMoveRelative.Done OR	
+	fbStop.Done OR
+	stAxisStruct.Axis.Status.Moving THEN
 		stAxisStruct.control.bExecute:=FALSE;
-END_IF*)
-
-IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.NotMoving THEN
-	stAxisStruct.control.bStop:=FALSE;
 END_IF
 
-IF stAxisStruct.control.bReset AND NOT stAxisStruct.status.bError THEN
-	stAxisStruct.control.bReset:=FALSE;
-END_IF
 
 ////Call of all MC Instances//////
 
@@ -114,11 +107,18 @@ END_FOR
 (*Stop*)	
 	fbStop.Execute:= stAxisStruct.control.bStop;
 	fbStop.Deceleration:= stAxisStruct.config.fDeceleration;
-
+	
+IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.NotMoving THEN
+	stAxisStruct.control.bStop:=FALSE;
+END_IF
 				
 (*Reset*)
 	fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.status.bError;
 
+IF stAxisStruct.control.bReset AND NOT stAxisStruct.status.bError THEN
+	stAxisStruct.control.bReset:=FALSE;
+END_IF
+	
 CASE stAxisStruct.control.eCommand OF
 	MotionFunctions.MoveAbsolute:
 		fbMoveAbsolute.Execute:=stAxisStruct.control.bExecute;
@@ -266,14 +266,10 @@ END_IF
     <LineIds Name="FB_Axis">
       <LineId Id="2448" Count="0" />
       <LineId Id="2750" Count="0" />
-      <LineId Id="2782" Count="4" />
+      <LineId Id="2834" Count="0" />
+      <LineId Id="2783" Count="3" />
       <LineId Id="2759" Count="1" />
       <LineId Id="2756" Count="0" />
-      <LineId Id="2743" Count="0" />
-      <LineId Id="2732" Count="1" />
-      <LineId Id="2731" Count="0" />
-      <LineId Id="2728" Count="0" />
-      <LineId Id="2726" Count="1" />
       <LineId Id="2725" Count="0" />
       <LineId Id="2659" Count="0" />
       <LineId Id="2185" Count="0" />
@@ -313,11 +309,16 @@ END_IF
       <LineId Id="1642" Count="0" />
       <LineId Id="1921" Count="0" />
       <LineId Id="1925" Count="1" />
+      <LineId Id="2837" Count="0" />
+      <LineId Id="2835" Count="1" />
       <LineId Id="2205" Count="0" />
       <LineId Id="2719" Count="0" />
       <LineId Id="2207" Count="0" />
       <LineId Id="2209" Count="0" />
+      <LineId Id="2838" Count="0" />
+      <LineId Id="2841" Count="1" />
       <LineId Id="2762" Count="0" />
+      <LineId Id="2839" Count="0" />
       <LineId Id="1657" Count="0" />
       <LineId Id="2366" Count="0" />
       <LineId Id="2220" Count="0" />
