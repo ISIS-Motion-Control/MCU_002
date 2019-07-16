@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
   <TextList Name="languageSupport" Id="{5d3fdc2f-5bea-44d3-8108-bdef8127e821}">
     <XmlArchive>
       <Data>
@@ -93,13 +93,6 @@
             <o>
               <v n="TextID">"bDone"</v>
               <v n="TextDefault">"Command Done"</v>
-              <l n="LanguageTexts" t="ArrayList" cet="String">
-                <v></v>
-              </l>
-            </o>
-            <o>
-              <v n="TextID">"bResetDone"</v>
-              <v n="TextDefault">"Reset Complete"</v>
               <l n="LanguageTexts" t="ArrayList" cet="String">
                 <v></v>
               </l>
@@ -276,9 +269,9 @@
           <l n="Languages" t="ArrayList" cet="String">
             <v>Test</v>
           </l>
-          <v n="GuidInit">{6ee01c9c-bade-4561-8f8f-51a016e36b74}</v>
-          <v n="GuidReInit">{39936094-7e9a-4d1a-be25-5739d90e11d1}</v>
-          <v n="GuidExitX">{ed0a015c-01b4-4db1-a63c-fa53488b2ddf}</v>
+          <v n="GuidInit">{77e31f35-5de9-49fd-bcee-b7d7fdf9d294}</v>
+          <v n="GuidReInit">{bb6ac636-89a1-4ad5-9629-646f113800c3}</v>
+          <v n="GuidExitX">{e4234035-eec3-47de-a2fe-d3d3ef9e9760}</v>
         </o>
       </Data>
       <TypeList>
