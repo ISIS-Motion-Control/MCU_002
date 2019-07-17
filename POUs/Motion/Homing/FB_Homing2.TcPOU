@@ -23,6 +23,7 @@ VAR_OUTPUT
 END_VAR
 VAR
 	bHomingInProgress: BOOL;
+	bReadNCVelocities: BOOL;
 	nHomeProcLocal: UINT := 0;
     nHomingState: INT := 0;
 	fbExecuteRiseEdge: R_TRIG;
@@ -39,6 +40,8 @@ VAR
 	fbFinishHoming: MC_FinishHoming;
 	StOptions2: ST_Home_Options2;
 	StOptions4: ST_Home_Options4;
+	
+	fbHomeReadNCVelocities: FB_HomeReadNCVelocities;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF bReset THEN	
@@ -53,10 +56,12 @@ IF bStop THEN
 	nHomingState:=0;
 END_IF
 
-//Reset at rinsing edge of bExecute
+
+//Reset at rising edge of bExecute
 fbExecuteRiseEdge(CLK:=bExecute);
 IF fbExecuteRiseEdge.Q THEN
 	bHomingInProgress:=TRUE;
+	bReadNCVelocities:=TRUE;
 	fbAbortHoming.Execute:=FALSE;
 	nHomeProcLocal:=nHomeProc; //Ensure that nHomeProc is not changed during sequence (nCmdData will only be read at a rising edge of bExecute)
 	CASE nHomeProcLocal OF  	
@@ -69,7 +74,7 @@ IF fbExecuteRiseEdge.Q THEN
 	  7:
 	  8:
 	  13:
-	  14: bHomingInProgress := TRUE;	
+	  14:
 	  15: 
     ELSE //nCmdData not valid	
       bError:=TRUE;
@@ -78,15 +83,16 @@ IF fbExecuteRiseEdge.Q THEN
   END_CASE
 END_IF
 
-IF bHomingInProgress THEN
+IF bHomingInProgress AND fbHomeReadNCVelocities.bDone THEN
 CASE nHomeProcLocal OF  	
-   1: // Home to low limit switch
+   1,2: // Home to Negative(1) or Positive(2) limit switch
 	   CASE nHomingState OF
 		  0: 
 		  	fbStepLimitSwitch.Execute:=FALSE;
 			fbStepLimitSwitch.Direction:=mcNegativeDirection;
 			fbStepLimitSwitch.LimitSwitchMode:=mcFallingEdge;
 			fbStepLimitSwitch.Setposition:=fHomePosition;
+			fbStepLimitSwitch.Velocity:=fbHomeReadNCVelocities.fVelocityToCam;
 			nHomingState:=nHomingState+1;
 	 	  1:
 			fbStepLimitSwitch.Execute:=TRUE;
@@ -101,13 +107,13 @@ CASE nHomeProcLocal OF
 				fbFinishHoming.Execute:=TRUE;
 			END_IF
 		END_CASE
-	2: // Home to high limit switch
 	3: // Home on bHomeSensor via bLimitBwd
 		CASE nHomingState OF
 		  0: 
 			fbStepLimitSwitchDetection.Execute:=FALSE;
 			fbStepLimitSwitchDetection.Direction:=mcNegativeDirection;
-			fbStepLimitSwitchDetection.LimitSwitchMode:=mcFallingEdge; 
+			fbStepLimitSwitchDetection.LimitSwitchMode:=mcFallingEdge;
+			fbStepLimitSwitchDetection.Velocity:=fbHomeReadNCVelocities.fVelocityToCam;
 			nHomingState:=nHomingState+1;
 	 	  1:
 			fbStepLimitSwitchDetection.Execute:=TRUE;
@@ -131,6 +137,7 @@ CASE nHomeProcLocal OF
 			fbStepAbsoluteSwitch.Execute:=FALSE;
 			fbStepAbsoluteSwitch.SwitchMode:=mcFallingEdge;
 			fbStepAbsoluteSwitch.SetPosition:=fHomePosition;
+			fbStepAbsoluteSwitch.Velocity:=fbHomeReadNCVelocities.fVelocityToCam;
 			CASE nHomeProcLocal OF
 				7: fbStepAbsoluteSwitch.Direction:=mcNegativeDirection;
 				8: fbStepAbsoluteSwitch.Direction:=mcPositiveDirection;
@@ -160,6 +167,7 @@ CASE nHomeProcLocal OF
 		  0: // Prepare params
 		  	fbStepReferencePulse.Execute:=FALSE;
 			fbStepReferencePulse.SetPosition:=fHomePosition;
+			fbStepReferencePulse.Velocity:=fbHomeReadNCVelocities.fVelocityToCam;
 			fbRef_Signal_Ref2.SignalSource:=SignalSource_ZeroPulse;
 			fbRef_Signal_Ref2.TouchProbe:=TouchProbe1;
 			CASE nHomeProcLocal OF
@@ -217,6 +225,12 @@ ELSE
 	fbFinishHoming.Execute:=FALSE;
 END_IF
 
+fbHomeReadNCVelocities(
+	En:=TRUE,
+	bExecute:=bReadNCVelocities, // Actualy not needed for sequence 15 (set position only, no movement))
+	bReset:=bReset,
+	Axis:=Axis );
+
 StOptions4.DisableDriveAccess:=TRUE;
 stOptions4.EnableLagErrorDetection:=TRUE;
 fbStepLimitSwitch(
@@ -231,8 +245,8 @@ fbStepLimitSwitch(
 	Deceleration:= , 
 	Jerk:= , 
 	SetPosition:= , 
-	TimeLimit:= T#60S, 
-	DistanceLimit:= 200, 
+	TimeLimit:= , 
+	DistanceLimit:= , 
 	TorqueLimit:= , 
 	BufferMode:= , 
 	Options:= StOptions4, 
@@ -250,7 +264,7 @@ fbStepLimitSwitchDetection(
 	Direction:= , 
 	LimitSwitchMode:= , 
 	LimitSwitchSignal:= , 
-	Velocity:= 10, // *********** NEED TO CHANGE ************** 
+	Velocity:= ,
 	Acceleration:= , 
 	Deceleration:= , 
 	Jerk:= , 
@@ -275,7 +289,7 @@ fbStepAbsoluteSwitch(
 	Direction:= , 
 	SwitchMode:= , 
 	ReferenceSignal:= fbRef_Signal_Ref2, 
-	Velocity:= 10, // *********** NEED TO CHANGE ************** 
+	Velocity:= ,
 	Acceleration:= , 
 	Deceleration:= , 
 	Jerk:= , 
@@ -301,7 +315,7 @@ fbStepReferencePulse(
 	Execute:= , 
 	Direction:= , 
 	ReferenceSignal:= fbRef_Signal_Ref2, 
-	Velocity:= 10, // *********** NEED TO CHANGE ************** 
+	Velocity:= ,
 	Acceleration:= , 
 	Deceleration:= , 
 	Jerk:= , 
@@ -373,8 +387,10 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="764" Count="0" />
       <LineId Id="913" Count="0" />
       <LineId Id="762" Count="0" />
+      <LineId Id="972" Count="0" />
       <LineId Id="49" Count="3" />
       <LineId Id="945" Count="0" />
+      <LineId Id="993" Count="0" />
       <LineId Id="940" Count="0" />
       <LineId Id="53" Count="0" />
       <LineId Id="58" Count="6" />
@@ -386,12 +402,14 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="753" Count="0" />
       <LineId Id="68" Count="2" />
       <LineId Id="754" Count="0" />
-      <LineId Id="85" Count="1" />
+      <LineId Id="974" Count="0" />
+      <LineId Id="86" Count="0" />
       <LineId Id="88" Count="2" />
       <LineId Id="832" Count="0" />
       <LineId Id="394" Count="0" />
       <LineId Id="513" Count="0" />
       <LineId Id="731" Count="0" />
+      <LineId Id="963" Count="0" />
       <LineId Id="530" Count="0" />
       <LineId Id="395" Count="0" />
       <LineId Id="514" Count="0" />
@@ -404,16 +422,17 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="682" Count="0" />
       <LineId Id="681" Count="0" />
       <LineId Id="398" Count="0" />
-      <LineId Id="515" Count="0" />
       <LineId Id="584" Count="0" />
       <LineId Id="766" Count="1" />
       <LineId Id="833" Count="0" />
       <LineId Id="768" Count="1" />
+      <LineId Id="964" Count="0" />
       <LineId Id="771" Count="12" />
       <LineId Id="765" Count="0" />
       <LineId Id="585" Count="2" />
       <LineId Id="871" Count="3" />
       <LineId Id="876" Count="1" />
+      <LineId Id="962" Count="0" />
       <LineId Id="932" Count="2" />
       <LineId Id="910" Count="0" />
       <LineId Id="903" Count="0" />
@@ -431,6 +450,7 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="813" Count="1" />
       <LineId Id="831" Count="0" />
       <LineId Id="919" Count="0" />
+      <LineId Id="961" Count="0" />
       <LineId Id="815" Count="0" />
       <LineId Id="841" Count="0" />
       <LineId Id="921" Count="3" />
@@ -455,6 +475,8 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="757" Count="1" />
       <LineId Id="834" Count="5" />
       <LineId Id="755" Count="0" />
+      <LineId Id="984" Count="4" />
+      <LineId Id="983" Count="0" />
       <LineId Id="688" Count="1" />
       <LineId Id="935" Count="0" />
       <LineId Id="461" Count="21" />
