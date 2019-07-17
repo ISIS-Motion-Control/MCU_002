@@ -180,6 +180,7 @@ CASE stAxisStruct.control.eCommand OF
 	MotionFunctions.Home:
 		fbHome.bExecute:= stAxisStruct.control.bExecute;
 		fbHome.bReset:= stAxisStruct.control.bReset;
+		fbHome.bStop:= stAxisStruct.control.bStop;
 		fbHome.nHomeProc:= stAxisStruct.config.nHomeSeq;
 		fbHome.bLimitBwd:= stAxisStruct.inputs.bLimitBwd; 
 		fbHome.bLimitFwd:= stAxisStruct.inputs.bLimitFwd; 
@@ -361,7 +362,9 @@ END_IF
       <LineId Id="2364" Count="0" />
       <LineId Id="2344" Count="0" />
       <LineId Id="2311" Count="0" />
-      <LineId Id="2329" Count="7" />
+      <LineId Id="2329" Count="1" />
+      <LineId Id="2888" Count="0" />
+      <LineId Id="2331" Count="5" />
       <LineId Id="2339" Count="0" />
       <LineId Id="2309" Count="0" />
       <LineId Id="2216" Count="0" />
