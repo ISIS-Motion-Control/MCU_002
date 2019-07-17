@@ -51,8 +51,6 @@ END_VAR]]></Declaration>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
 IF stAxisStruct.status.bError OR 
-	stAxisStruct.status.bDone OR
-	fbStop.Done OR
 	stAxisStruct.Axis.Status.Moving THEN
 		stAxisStruct.control.bExecute:=FALSE;
 END_IF
@@ -265,7 +263,6 @@ END_IF
       <LineId Id="2448" Count="0" />
       <LineId Id="2750" Count="0" />
       <LineId Id="2834" Count="0" />
-      <LineId Id="2785" Count="1" />
       <LineId Id="2759" Count="1" />
       <LineId Id="2756" Count="0" />
       <LineId Id="2725" Count="0" />
