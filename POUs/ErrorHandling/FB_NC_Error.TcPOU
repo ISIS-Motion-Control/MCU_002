@@ -35,8 +35,8 @@ IF En THEN
 	IF nNC_ErrorID <> 0 THEN
 		NCError.sErrorMessage	:= 'Axis ';
 		NCError.sErrorMessage	:= CONCAT (NCError.sErrorMessage, UDINT_TO_STRING(nNC_AxisID));
-		NCError.sErrorMessage	:= CONCAT (NCError.sErrorMessage, ' is in error state. NC error ID (Dec): ');
-		NCError.sErrorMessage	:= CONCAT (NCError.sErrorMessage, UDINT_TO_STRING(nNC_ErrorID));
+		NCError.sErrorMessage	:= CONCAT (NCError.sErrorMessage, ' is in error state. NC error ID (Hex): 0x');
+		NCError.sErrorMessage	:= CONCAT (NCError.sErrorMessage, DWORD_TO_HEXSTR(nNC_ErrorID,4,FALSE));
 		NCError.ErrorPriority	:= 6;
 		NCError.bError			:= TRUE;
 	ELSE
