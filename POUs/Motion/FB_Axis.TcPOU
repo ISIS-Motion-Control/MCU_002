@@ -51,7 +51,8 @@ END_VAR]]></Declaration>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
 IF stAxisStruct.status.bError OR 
-	stAxisStruct.Axis.Status.Moving THEN
+	stAxisStruct.Axis.Status.Moving OR 
+	stAxisStruct.Axis.Status.Coupled THEN
 		stAxisStruct.control.bExecute:=FALSE;
 END_IF
 
@@ -264,7 +265,9 @@ END_IF
       <LineId Id="2448" Count="0" />
       <LineId Id="2750" Count="0" />
       <LineId Id="2834" Count="0" />
-      <LineId Id="2759" Count="1" />
+      <LineId Id="2759" Count="0" />
+      <LineId Id="2934" Count="0" />
+      <LineId Id="2760" Count="0" />
       <LineId Id="2756" Count="0" />
       <LineId Id="2725" Count="0" />
       <LineId Id="2659" Count="0" />
