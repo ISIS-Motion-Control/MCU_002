@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
   <POU Name="EL7041_0052" Id="{871c7ba7-382f-49e5-a713-787a6f81b300}" SpecialFunc="None">
     <Declaration><![CDATA[//EL7041-0052 | Stepper motor terminal, 50V DC, 5A
 FUNCTION_BLOCK EL7041_0052

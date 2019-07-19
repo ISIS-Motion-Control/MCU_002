@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
   <POU Name="EL1008" Id="{1c776ddd-5c71-412e-8433-aacbe67877c3}" SpecialFunc="None">
     <Declaration><![CDATA[///EL1008 | 8-channel digital input terminal 24 V DC, 3 ms
 FUNCTION_BLOCK EL1008

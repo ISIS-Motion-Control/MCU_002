@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
   <POU Name="EL3255" Id="{196b856f-d8fb-491f-ab71-4ec8edd9b398}" SpecialFunc="None">
     <Declaration><![CDATA[//EL3255 | 5-channel potentiometer measurement with sensor supply
 FUNCTION_BLOCK EL3255

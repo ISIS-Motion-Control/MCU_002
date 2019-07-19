@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
   <POU Name="EL2014" Id="{87ed0f35-77bb-4af3-abb4-bd4457e39e0b}" SpecialFunc="None">
     <Declaration><![CDATA[// EL2014 | 4-channel output terminal, 24V DC, 0.5A, 4 x 0V contact
 FUNCTION_BLOCK EL2014 

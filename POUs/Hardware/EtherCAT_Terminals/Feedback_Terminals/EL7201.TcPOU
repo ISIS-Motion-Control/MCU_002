@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
   <POU Name="EL7201" Id="{014d2d65-7ca8-4015-a842-40448ab49beb}" SpecialFunc="None">
     <Declaration><![CDATA[//EL7201 | 1-chennel resolver terminal (ESS only use it for resolver input)
 FUNCTION_BLOCK EL7201

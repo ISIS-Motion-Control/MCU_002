@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
   <DUT Name="dutEL2521_Ctrl" Id="{4f7afc95-d93a-4274-9d93-084eb736d49f}">
     <Declaration><![CDATA[TYPE dutEL2521_Ctrl :
 STRUCT
