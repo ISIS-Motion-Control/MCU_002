@@ -76,8 +76,8 @@ IF fbExecuteRiseEdge.Q THEN
 	  6:
 	  7:
 	  8:
-	  13:
-	  14:
+	  9:
+	  10:
 	  15: 
     ELSE
       bError:=TRUE;
@@ -88,7 +88,7 @@ END_IF
 
 IF bHomingInProgress AND fbHomeReadNCVelocities.bDone AND NOT bError THEN
 CASE nHomeProcLocal OF  	
-   1,2: // Home to bLimit Fwd(1) or bLimitFwd(2)
+   1,2: // Home to bLimit bLimitBwd(1) or bLimitFwd(2)
 		CASE nHomingState OF
 		  0: 
 			fbStepLimitSwitchDetection.Execute:=FALSE;
@@ -138,7 +138,7 @@ CASE nHomeProcLocal OF
 				nHomingState:=0;
 			END_IF
 		END_CASE
-	3,4: // Home on bHomeSensor via bLimitBwd(3) or bLimitFwd(4)
+	3,4: // Home to bHomeSensor via bLimitBwd(3) or bLimitFwd(4)
 		CASE nHomingState OF
 		  0: 
 			fbStepLimitSwitchDetection.Execute:=FALSE;
@@ -165,7 +165,7 @@ CASE nHomeProcLocal OF
 				nHomingState:=0;
 			END_IF
 		END_CASE
-	5,6: // Home on Enc Latch via bLimtBwd(5) or bLimitFwd(6)
+	5,6: // Home to index pulse of an encoder via bLimitBwd(5) or bLimitFwd(6)
 		CASE nHomingState OF
 		  0: 
 			fbStepLimitSwitchDetection.Execute:=FALSE;
@@ -186,8 +186,8 @@ CASE nHomeProcLocal OF
 		  3:
 		  	IF fbStepLimitSwitchDetection.Done THEN
 				CASE nHomeProcLocal OF
-					5: nHomeProcLocal:=14;
-					6: nHomeProcLocal:=13;
+					5: nHomeProcLocal:=10;
+					6: nHomeProcLocal:=9;
 				END_CASE
 				nHomingState:=0;
 			END_IF
@@ -224,21 +224,17 @@ CASE nHomeProcLocal OF
 				nHomingState:=0;
 			END_IF
 		END_CASE
-	9,10: // Home to middle of bHome Sensor via bLimitBwd(11) or bLimitFwd(12)
-		  // Not intended to be implemented
-	11,12: // Home to the Nth index pulse of an encoder via bLimitBwd(11) or bLimitFwd(12)
-		   // Not intended to be implemented		  
-	13,14: // Home to zero pulse on encoder in the negative(13) or positive(14) direction
+	9,10: // Home index pulse of an encoder in the negative(9) or positive(10) direction
 		CASE nHomingState OF
-		  0: // Prepare parameters
+		  0:
 		  	fbStepReferencePulse.Execute:=FALSE;
 			fbStepReferencePulse.SetPosition:=fHomePosition;
 			fbStepReferencePulse.Velocity:=fbHomeReadNCVelocities.fVelocityFromCam;
 			fbRef_Signal_Ref4.SignalSource:=SignalSource_ZeroPulse;
 			fbRef_Signal_Ref4.TouchProbe:=TouchProbe1;
 			CASE nHomeProcLocal OF
-				13: fbStepReferencePulse.Direction:=mcNegativeDirection;
-				14: fbStepReferencePulse.Direction:=mcPositiveDirection;
+				9: fbStepReferencePulse.Direction:=mcNegativeDirection;
+				10: fbStepReferencePulse.Direction:=mcPositiveDirection;
 			END_CASE
 			nHomingState:=nHomingState+1;
 	 	  1:
@@ -468,11 +464,7 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="937" Count="0" />
       <LineId Id="1075" Count="0" />
       <LineId Id="895" Count="1" />
-      <LineId Id="870" Count="0" />
-      <LineId Id="1264" Count="0" />
-      <LineId Id="1266" Count="0" />
-      <LineId Id="1268" Count="0" />
-      <LineId Id="1267" Count="0" />
+      <LineId Id="1669" Count="0" />
       <LineId Id="590" Count="0" />
       <LineId Id="813" Count="1" />
       <LineId Id="831" Count="0" />
