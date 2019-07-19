@@ -42,7 +42,7 @@ VAR
 	fbMoveModulo: MC_MoveModulo;	
 	fbGearIn: MC_GearIn;
 	fbGearOut: MC_GearOut;
-	fbHome: FB_Homing2;
+	fbHome: FB_Homing;
 	fbExecuteRiseEdge: R_TRIG;
 	fbStopRiseEdge: R_TRIG;
 	fbResetRiseEdge: R_TRIG;
@@ -50,10 +50,7 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
-IF stAxisStruct.status.bError OR 
-	stAxisStruct.status.bDone OR
-	fbStop.Done OR
-	stAxisStruct.Axis.Status.Moving THEN
+IF stAxisStruct.status.bError OR stAxisStruct.Axis.Status.Moving THEN
 		stAxisStruct.control.bExecute:=FALSE;
 END_IF
 
@@ -93,7 +90,6 @@ FOR i:= 1 TO GVL.axisNum DO
 		stAxisStruct.status.bBwEnabled:=stAxisStruct.status.bBwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bFwEnabled, GVL.axes[i].status.bBwEnabled);
 	END_IF
 END_FOR
-
 
 (*Power*)
 	fbPower.Enable:=stAxisStruct.control.bEnable;
@@ -182,12 +178,13 @@ CASE stAxisStruct.control.eCommand OF
 	MotionFunctions.Home:
 		fbHome.bExecute:= stAxisStruct.control.bExecute;
 		fbHome.bReset:= stAxisStruct.control.bReset;
+		fbHome.bStop:= stAxisStruct.control.bStop;
 		fbHome.nHomeProc:= stAxisStruct.config.nHomeSeq;
+		fbHome.fHomePosition:= stAxisStruct.config.fHomePosition;
 		fbHome.bLimitBwd:= stAxisStruct.inputs.bLimitBwd; 
 		fbHome.bLimitFwd:= stAxisStruct.inputs.bLimitFwd; 
 		fbHome.bEncLatch:= stAxisStruct.inputs.bEncLatch;
 		fbHome.bHomeSensor:= stAxisStruct.inputs.bHomeSensor;
-		fbHome.fHomePosition:= 0; 
 		stAxisStruct.status.bHomed:=fbHome.bHomed;
 				
 END_CASE			
@@ -265,8 +262,7 @@ END_IF
       <LineId Id="2448" Count="0" />
       <LineId Id="2750" Count="0" />
       <LineId Id="2834" Count="0" />
-      <LineId Id="2785" Count="1" />
-      <LineId Id="2759" Count="1" />
+      <LineId Id="2760" Count="0" />
       <LineId Id="2756" Count="0" />
       <LineId Id="2725" Count="0" />
       <LineId Id="2659" Count="0" />
@@ -299,7 +295,6 @@ END_IF
       <LineId Id="2586" Count="2" />
       <LineId Id="2585" Count="0" />
       <LineId Id="2594" Count="0" />
-      <LineId Id="2517" Count="0" />
       <LineId Id="2516" Count="0" />
       <LineId Id="1629" Count="0" />
       <LineId Id="1632" Count="3" />
@@ -364,7 +359,11 @@ END_IF
       <LineId Id="2364" Count="0" />
       <LineId Id="2344" Count="0" />
       <LineId Id="2311" Count="0" />
-      <LineId Id="2329" Count="7" />
+      <LineId Id="2329" Count="1" />
+      <LineId Id="2888" Count="0" />
+      <LineId Id="2331" Count="0" />
+      <LineId Id="2934" Count="0" />
+      <LineId Id="2332" Count="3" />
       <LineId Id="2339" Count="0" />
       <LineId Id="2309" Count="0" />
       <LineId Id="2216" Count="0" />
