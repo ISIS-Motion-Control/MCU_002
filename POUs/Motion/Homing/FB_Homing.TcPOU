@@ -224,7 +224,7 @@ CASE nHomeProcLocal OF
 				nHomingState:=0;
 			END_IF
 		END_CASE
-	9,10: // Home index pulse of an encoder in the negative(9) or positive(10) direction
+	9,10: // Home to index pulse of an encoder in the negative(9) or positive(10) direction
 		CASE nHomingState OF
 		  0:
 		  	fbStepReferencePulse.Execute:=FALSE;
@@ -276,6 +276,7 @@ CASE nHomeProcLocal OF
 				fbHomeDirect.Execute:=FALSE;
 				bHomingInProgress:=FALSE;
 				bReadNCVelocities:=FALSE;
+				nHomingState:=0;
 			END_IF
 		END_CASE	
 END_CASE
@@ -285,6 +286,7 @@ ELSE
 	fbStepAbsoluteSwitch.Execute:=FALSE;
 	fbStepReferencePulse.Execute:=FALSE;
 	fbHomeDirect.Execute:=FALSE;
+	nHomingState:=0;
 END_IF
 
 fbHomeReadNCVelocities(
@@ -490,12 +492,14 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="751" Count="0" />
       <LineId Id="756" Count="0" />
       <LineId Id="1073" Count="0" />
+      <LineId Id="1723" Count="0" />
       <LineId Id="750" Count="0" />
       <LineId Id="732" Count="0" />
       <LineId Id="399" Count="0" />
       <LineId Id="1611" Count="0" />
       <LineId Id="1613" Count="3" />
       <LineId Id="1612" Count="0" />
+      <LineId Id="1724" Count="0" />
       <LineId Id="755" Count="0" />
       <LineId Id="984" Count="4" />
       <LineId Id="983" Count="0" />
