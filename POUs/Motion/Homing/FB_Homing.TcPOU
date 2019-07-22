@@ -68,7 +68,7 @@ IF fbExecuteRiseEdge.Q THEN
 	fbAbortHoming.Execute:=FALSE;
 	nHomeProcLocal:=nHomeProc;
 	CASE nHomeProcLocal OF  	
-	  1: // Home TO bBwdLimit (reverse off limit)
+	  1: // Home to bBwdLimit (reverse off limit)
       2: // Home to bFwdLimit (reverse off limit)
       3: // Home to bHome via bBwdLimit
       4: // Home to bHome via bFwdLimit
@@ -79,7 +79,6 @@ IF fbExecuteRiseEdge.Q THEN
 	  9: // Home to EncRefPulse in Bwd direction
 	  10: // Home to EncRefPulse in Fwd direction
 	  15: // Home direct via software
-
     ELSE
       bError:=TRUE;
 	  bHomingInProgress := FALSE;
@@ -402,9 +401,7 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="899" Count="0" />
       <LineId Id="902" Count="0" />
       <LineId Id="901" Count="0" />
-      <LineId Id="65" Count="0" />
-      <LineId Id="1712" Count="0" />
-      <LineId Id="66" Count="1" />
+      <LineId Id="65" Count="2" />
       <LineId Id="753" Count="0" />
       <LineId Id="68" Count="2" />
       <LineId Id="754" Count="0" />
