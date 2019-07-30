@@ -98,7 +98,7 @@ END_FOR
 	fbStop.Execute:= stAxisStruct.control.bStop;
 	fbStop.Deceleration:= stAxisStruct.config.fDeceleration;
 	
-IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.NotMoving THEN
+IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.Stopping THEN
 	stAxisStruct.control.bStop:=FALSE;
 END_IF
 				
