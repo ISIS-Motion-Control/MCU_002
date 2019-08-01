@@ -148,7 +148,6 @@ CASE stAxisStruct.control.eCommand OF
 
 				
 	MotionFunctions.GearIn:
-		
 		fbGearIn.Execute:=			stAxisStruct.control.bExecute;
 		fbGearIn.RatioNumerator:=	masterAxis.Ratio;
 		fbGearIn.RatioDenominator:=1;		//kept static as numerator is LREAL and consistent with multigearing
@@ -331,7 +330,6 @@ stAxisStruct.control.bExecute:=FALSE;]]></ST>
       <LineId Id="2310" Count="0" />
       <LineId Id="2343" Count="0" />
       <LineId Id="2504" Count="0" />
-      <LineId Id="2495" Count="0" />
       <LineId Id="2575" Count="0" />
       <LineId Id="2497" Count="0" />
       <LineId Id="2506" Count="0" />
