@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
   <POU Name="FB_Axis" Id="{45901cd0-c6d2-4114-b7cf-de832171219f}" SpecialFunc="None">
     <Declaration><![CDATA[///#########################################################
 ///Function block to run a virtual drive with Nc
@@ -16,7 +16,9 @@
 FUNCTION_BLOCK FB_Axis
 VAR
 	sVersion: STRING:='1.0.4';	
+	masterAxis			:	ST_GearAxis :=(index:=1, ratio:=0) ;
 	
+	i: UINT;
 END_VAR
 VAR_INPUT
 
@@ -38,13 +40,15 @@ VAR
 	fbMoveVelocity: MC_MoveVelocity;
 	fbMoveRelative: MC_MoveRelative;
 	fbMoveModulo: MC_MoveModulo;	
-	fbGearInDyn: MC_GearInDyn;
+	fbGearIn: MC_GearIn;
 	fbGearOut: MC_GearOut;
 	fbHome: FB_Homing;
 	fbExecuteRiseEdge: R_TRIG;
+	fbStopRiseEdge: R_TRIG;
+	fbResetRiseEdge: R_TRIG;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
 
 ////Call of all MC Instances//////
 
@@ -67,27 +71,44 @@ fbMoveVelocity(Axis:=stAxisStruct.Axis);
 fbMoveVelocity.Execute:=FALSE;
 fbMoveModulo(Axis:=stAxisStruct.Axis);
 fbMoveModulo.Execute:=FALSE;
-//fbGearInDyn(Master:=, Slave:=);
-fbGearInDyn.Enable:=FALSE;
-//fbGearOut(Slave:=);
+fbGearin(Slave:= stAxisStruct.Axis, Master:= GVL.axes[masterAxis.index].Axis);
+fbGearIn.Execute:=FALSE;
+fbGearOut(Slave:=stAxisStruct.Axis);
 fbGearOut.Execute:=FALSE;
+
+stAxisStruct.status.bFwEnabled:= stAxisStruct.inputs.bLimitFwd;
+stAxisStruct.status.bBwEnabled:= stAxisStruct.inputs.bLimitBwd;
+
+FOR i:= 1 TO GVL.axisNum DO
+	IF (stAxisStruct.slaveAxisRatio[i]<>0) THEN
+		stAxisStruct.status.bFwEnabled:=stAxisStruct.status.bFwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bBwEnabled, GVL.axes[i].status.bFwEnabled);
+		stAxisStruct.status.bBwEnabled:=stAxisStruct.status.bBwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bFwEnabled, GVL.axes[i].status.bBwEnabled);
+	END_IF
+END_FOR
 
 
 (*Power*)
 	fbPower.Enable:=stAxisStruct.control.bEnable;
-	fbPower.Enable_Positive:=stAxisStruct.control.bEnable AND stAxisStruct.inputs.bLimitFwd;	
-	fbPower.Enable_Negative:=stAxisStruct.control.bEnable AND stAxisStruct.inputs.bLimitBwd;
+	fbPower.Enable_Positive:= stAxisStruct.status.bFwEnabled;	
+	fbPower.Enable_Negative:= stAxisStruct.status.bBwEnabled;
 	fbPower.Override:= stAxisStruct.config.fOverride;
 	stAxisStruct.status.bEnabled:=fbPower.Status;
 
 (*Stop*)	
 	fbStop.Execute:= stAxisStruct.control.bStop;
 	fbStop.Deceleration:= stAxisStruct.config.fDeceleration;
+	
+IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.Stopping THEN
+	stAxisStruct.control.bStop:=FALSE;
+END_IF
 				
 (*Reset*)
-	fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.Axis.Status.Error;
+	fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.status.bError;
 
-
+IF stAxisStruct.control.bReset AND NOT stAxisStruct.status.bError THEN
+	stAxisStruct.control.bReset:=FALSE;
+END_IF
+	
 CASE stAxisStruct.control.eCommand OF
 	MotionFunctions.MoveAbsolute:
 		fbMoveAbsolute.Execute:=stAxisStruct.control.bExecute;
@@ -104,8 +125,8 @@ CASE stAxisStruct.control.eCommand OF
 		fbMoveRelative.Deceleration:=stAxisStruct.config.fDeceleration;
 				
 	MotionFunctions.Jog:
-		fbJog.JogForward:=stAxisStruct.control.bJogFwd AND NOT stAxisStruct.control.bExecute;
-		fbJog.JogBackwards:=stAxisStruct.control.bJogBwd AND NOT stAxisStruct.control.bExecute;
+		fbJog.JogForward:=stAxisStruct.control.bJogFwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
+		fbJog.JogBackwards:=stAxisStruct.control.bJogBwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
 		fbJog.Mode:=0;
 		fbJog.Velocity:=stAxisStruct.config.fVelocity;
 		fbJog.Acceleration:=stAxisStruct.config.fAcceleration;
@@ -126,15 +147,33 @@ CASE stAxisStruct.control.eCommand OF
 		fbMoveModulo.Deceleration:=stAxisStruct.config.fDeceleration;
 
 				
-	MotionFunctions.SingleGearIn:
+	MotionFunctions.GearIn:
+		fbGearIn.Execute:=			stAxisStruct.control.bExecute;
+		fbGearIn.RatioNumerator:=	masterAxis.Ratio;
+		fbGearIn.RatioDenominator:=1;		//kept static as numerator is LREAL and consistent with multigearing
+		
+		IF NOT fbGearIn.InGear THEN
+			masterAxis.Index:=  stAxisStruct.masterAxis.index;
+			masterAxis.Ratio:= stAxisStruct.masterAxis.ratio;
+		END_IF
+		
+		IF fbGearIn.InGear AND (GVL.axes[masterAxis.Index].slaveAxisRatio[GVL.iAxis]=0) THEN	//only update index and ratios on new gearIns, change of ratio requires gearOut
+			GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=masterAxis.ratio;
+		END_IF
 	
-	MotionFunctions.SingleGearOut:
+	MotionFunctions.GearOut:
+		fbGearOut.Execute:=			stAxisStruct.control.bExecute;
+		
+		IF fbGearOut.Done THEN
+			GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=0; //Clear slave ratio from master axis slave array
+		END_IF
 	
-	MotionFunctions.MultiGear:
+	MotionFunctions.MultiGearIn:
 			
 	MotionFunctions.Home:
 		fbHome.bExecute:= stAxisStruct.control.bExecute;
 		fbHome.bReset:= stAxisStruct.control.bReset;
+		fbHome.bStop:= stAxisStruct.control.bStop;
 		fbHome.nHomeProc:= stAxisStruct.config.nHomeSeq;
 		fbHome.bLimitBwd:= stAxisStruct.inputs.bLimitBwd; 
 		fbHome.bLimitFwd:= stAxisStruct.inputs.bLimitFwd; 
@@ -145,48 +184,62 @@ CASE stAxisStruct.control.eCommand OF
 				
 END_CASE			
 
-
 (*Busy*)
 stAxisStruct.status.bBusy:=stAxisStruct.Axis.Status.HasJob;
 
+(*Done*)
+IF fbMoveAbsolute.Done OR fbMoveModulo.Done OR fbMoveRelative.Done THEN
+		stAxisStruct.status.bDone:=TRUE;
+ELSIF stAxisStruct.Axis.Status.HasJob THEN
+		stAxisStruct.status.bDone:=FALSE;
+END_IF
+
 (*Error from functions and Nc*)
-IF fbPower.Error AND fbPower.Active THEN
-	stAxisStruct.status.bError:=fbPower.Enable;
+IF stAxisStruct.status.bError and not stAxisStruct.control.bReset THEN 
+	stAxisStruct.status.bError:=stAxisStruct.status.bError;
+	stAxisStruct.status.nErrorID:=stAxisStruct.status.nErrorID;
+ELSIF fbPower.Error THEN
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbPower.ErrorID;
-ELSIF fbHalt.Error AND fbHalt.Active THEN
-	stAxisStruct.status.bError:=fbHalt.Execute;
+ELSIF fbHalt.Error THEN
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHalt.ErrorID;
 ELSIF fbJog.Error THEN
-	stAxisStruct.status.bError:=fbJog.JogForward OR fbJog.JogBackwards;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbJog.ErrorID;
 ELSIF fbMoveVelocity.Error THEN
-	stAxisStruct.status.bError:=fbMoveVelocity.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveVelocity.ErrorID;
 ELSIF fbMoveRelative.Error THEN
-	stAxisStruct.status.bError:=fbMoveRelative.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveRelative.ErrorID;
 ELSIF fbMoveAbsolute.Error THEN
-	stAxisStruct.status.bError:=fbMoveAbsolute.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveAbsolute.ErrorID;
 ELSIF fbMoveModulo.Error THEN
-	stAxisStruct.status.bError:=fbMoveModulo.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbMoveModulo.ErrorID;
 ELSIF fbHome.bError THEN
-	stAxisStruct.status.bError:=fbHome.bError;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbHome.nErrorID;
-ELSIF fbGearInDyn.Error THEN
-	stAxisStruct.status.bError:=fbGearInDyn.Enable;
-	stAxisStruct.status.nErrorId:=fbGearInDyn.ErrorID;
+ELSIF fbGearIn.Error THEN
+	stAxisStruct.status.bError:=TRUE;
+	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
+ELSIF fbGearIn.Error THEN
+	stAxisStruct.status.bError:=TRUE;
+	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
 ELSIF fbGearOut.Error and stAxisStruct.Axis.Status.Coupled THEN
-	stAxisStruct.status.bError:=fbGearOut.Execute;
+	stAxisStruct.status.bError:=TRUE;
 	stAxisStruct.status.nErrorId:=fbGearOut.ErrorID;
 ELSIF stAxisStruct.Axis.Status.Error  THEN
-	stAxisStruct.status.bError:=TRUE;
+	stAxisStruct.status.bError:=stAxisStruct.Axis.Status.Error;
 	stAxisStruct.status.nErrorId:=stAxisStruct.Axis.Status.ErrorID;
 ELSE
 	stAxisStruct.status.bError:=FALSE;
 	stAxisStruct.status.nErrorId:=0;
 END_IF;
+
+stAxisStruct.status.bGeared:= stAxisStruct.Axis.Status.Coupled;
 
 (*Actual Velocity*)
 stAxisStruct.status.fActVelocity:=stAxisStruct.Axis.NcToPlc.ActVelo;
@@ -198,11 +251,12 @@ ELSE
 	stAxisStruct.status.fActPosition:=stAxisStruct.Axis.NcToPlc.ActPos;
 END_IF
 
-]]></ST>
+(*Reset bExecute*)
+stAxisStruct.control.bExecute:=FALSE;]]></ST>
     </Implementation>
     <LineIds Name="FB_Axis">
       <LineId Id="2448" Count="0" />
-      <LineId Id="2440" Count="0" />
+      <LineId Id="2659" Count="0" />
       <LineId Id="2185" Count="0" />
       <LineId Id="2203" Count="0" />
       <LineId Id="2189" Count="0" />
@@ -221,20 +275,35 @@ END_IF
       <LineId Id="2437" Count="0" />
       <LineId Id="2200" Count="0" />
       <LineId Id="2438" Count="0" />
-      <LineId Id="2202" Count="0" />
-      <LineId Id="2445" Count="0" />
+      <LineId Id="2573" Count="0" />
+      <LineId Id="2493" Count="0" />
       <LineId Id="2201" Count="0" />
       <LineId Id="2446" Count="0" />
-      <LineId Id="1627" Count="2" />
+      <LineId Id="1627" Count="1" />
+      <LineId Id="2515" Count="0" />
+      <LineId Id="2595" Count="0" />
+      <LineId Id="2591" Count="0" />
+      <LineId Id="2586" Count="2" />
+      <LineId Id="2585" Count="0" />
+      <LineId Id="2594" Count="0" />
+      <LineId Id="2517" Count="0" />
+      <LineId Id="2516" Count="0" />
+      <LineId Id="1629" Count="0" />
       <LineId Id="1632" Count="3" />
       <LineId Id="1637" Count="0" />
       <LineId Id="1642" Count="0" />
       <LineId Id="1921" Count="0" />
       <LineId Id="1925" Count="1" />
+      <LineId Id="2837" Count="0" />
+      <LineId Id="2835" Count="1" />
       <LineId Id="2205" Count="0" />
+      <LineId Id="2719" Count="0" />
       <LineId Id="2207" Count="0" />
       <LineId Id="2209" Count="0" />
-      <LineId Id="2375" Count="1" />
+      <LineId Id="2838" Count="0" />
+      <LineId Id="2841" Count="1" />
+      <LineId Id="2762" Count="0" />
+      <LineId Id="2839" Count="0" />
       <LineId Id="1657" Count="0" />
       <LineId Id="2366" Count="0" />
       <LineId Id="2220" Count="0" />
@@ -260,23 +329,53 @@ END_IF
       <LineId Id="2303" Count="0" />
       <LineId Id="2310" Count="0" />
       <LineId Id="2343" Count="0" />
+      <LineId Id="2504" Count="0" />
+      <LineId Id="2575" Count="0" />
+      <LineId Id="2497" Count="0" />
+      <LineId Id="2506" Count="0" />
+      <LineId Id="2570" Count="1" />
+      <LineId Id="2574" Count="0" />
+      <LineId Id="2572" Count="0" />
+      <LineId Id="2569" Count="0" />
+      <LineId Id="2577" Count="0" />
+      <LineId Id="2583" Count="0" />
+      <LineId Id="2576" Count="0" />
       <LineId Id="2361" Count="1" />
+      <LineId Id="2498" Count="0" />
+      <LineId Id="2582" Count="0" />
+      <LineId Id="2511" Count="0" />
+      <LineId Id="2584" Count="0" />
+      <LineId Id="2513" Count="0" />
       <LineId Id="2444" Count="0" />
       <LineId Id="2364" Count="0" />
       <LineId Id="2344" Count="0" />
       <LineId Id="2311" Count="0" />
-      <LineId Id="2329" Count="7" />
+      <LineId Id="2329" Count="1" />
+      <LineId Id="2888" Count="0" />
+      <LineId Id="2331" Count="5" />
       <LineId Id="2339" Count="0" />
       <LineId Id="2309" Count="0" />
       <LineId Id="2216" Count="0" />
-      <LineId Id="1674" Count="0" />
       <LineId Id="1733" Count="0" />
       <LineId Id="1936" Count="1" />
-      <LineId Id="1941" Count="34" />
+      <LineId Id="2770" Count="0" />
+      <LineId Id="2769" Count="0" />
+      <LineId Id="2772" Count="0" />
+      <LineId Id="2777" Count="2" />
+      <LineId Id="2771" Count="0" />
+      <LineId Id="1941" Count="1" />
+      <LineId Id="2651" Count="2" />
+      <LineId Id="1945" Count="30" />
       <LineId Id="1979" Count="3" />
-      <LineId Id="1992" Count="9" />
+      <LineId Id="2501" Count="0" />
+      <LineId Id="1992" Count="0" />
+      <LineId Id="2502" Count="0" />
+      <LineId Id="1993" Count="8" />
       <LineId Id="2272" Count="0" />
       <LineId Id="1934" Count="0" />
+      <LineId Id="202" Count="3" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="2980" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
