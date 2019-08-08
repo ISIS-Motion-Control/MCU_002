@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
   <DUT Name="ST_AxisStruct" Id="{9732127f-85ab-48d1-a591-d13402fe3665}">
     <Declaration><![CDATA[TYPE ST_AxisStruct :
 STRUCT
@@ -26,7 +26,7 @@ STRUCT
 	
 	masterAxis			:	ST_GearAxis; 	//Single master axis
 	//slaveAxis			:	ARRAY [1..GVL.axisNum]OF ST_GearAxis :=(index:=0, ratio:=0) ;	//Linking single slave axes
-	slaveAxisRatio		:	ARRAY [1..GVL.axisNum] OF LREAL;
+	slaveAxisRatio		:	ARRAY [1..GVL_APP.axisNum] OF LREAL;
 	
 		
 //////Extra things of original ISIS Structure/////
