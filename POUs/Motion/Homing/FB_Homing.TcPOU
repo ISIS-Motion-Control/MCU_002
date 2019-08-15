@@ -44,6 +44,9 @@ VAR
 	fbAbortHoming: MC_AbortHoming;
 	fbFinishHoming: MC_FinishHoming;
 	fbHomeReadNCVelocities: FB_HomeReadNCVelocities;
+	
+	trigger: TRIGGER_REF;
+	touchProbe: MC_TouchProbe;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF bReset THEN	
@@ -365,7 +368,7 @@ fbStepLimitSwitchDetection(
 	LimitSwitchSignal:= fbRef_Signal_Ref2,
 	TimeLimit:= tLimit, 
 	Options:= StOptions4);
-
+	
 fbRef_Signal_Ref3.Level:=bHomeSensor;	
 fbRef_Signal_Ref3.TouchProbe:=PlcEvent;	
 fbRef_Signal_Ref3.SignalSource:=SignalSource_Default;	
@@ -389,7 +392,8 @@ fbStepReferencePulse(
 	
 fbHomeDirect(
 	Axis:= Axis, 
-	Parameter:= fbHomingParameter);
+	Parameter:= fbHomingParameter,
+	Options:= StOptions2);
 	
 fbFinishHoming(
 	Axis:= Axis, 
@@ -568,7 +572,7 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="793" Count="0" />
       <LineId Id="1940" Count="0" />
       <LineId Id="802" Count="0" />
-      <LineId Id="1817" Count="0" />
+      <LineId Id="2031" Count="0" />
       <LineId Id="1798" Count="0" />
       <LineId Id="1813" Count="0" />
       <LineId Id="1864" Count="0" />
@@ -585,6 +589,7 @@ bHomed:=Axis.Status.Homed;]]></ST>
       <LineId Id="577" Count="0" />
       <LineId Id="670" Count="0" />
       <LineId Id="646" Count="2" />
+      <LineId Id="2026" Count="0" />
       <LineId Id="1945" Count="0" />
       <LineId Id="614" Count="2" />
       <LineId Id="1581" Count="0" />
