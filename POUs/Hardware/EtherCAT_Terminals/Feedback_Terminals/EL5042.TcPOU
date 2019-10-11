@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL5042" Id="{004c6c92-c047-49ba-9e4a-59675e5ea7dd}" SpecialFunc="None">
     <Declaration><![CDATA[//EL5042 | 2-channel BiSS-C absolute encoder terminal
 FUNCTION_BLOCK EL5042

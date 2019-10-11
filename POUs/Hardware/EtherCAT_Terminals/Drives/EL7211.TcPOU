@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL7211" Id="{b42893c3-600d-478d-8498-9389d8fa4a5c}" SpecialFunc="None">
     <Declaration><![CDATA[//EL7211 | Servo terminal, for resolver, 50V DC, 4.5Arms
 FUNCTION_BLOCK EL7211

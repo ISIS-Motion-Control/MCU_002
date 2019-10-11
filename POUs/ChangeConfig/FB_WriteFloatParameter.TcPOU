@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_WriteFloatParameter" Id="{8d98c0d3-e029-4bc1-bb0d-006a7c407e39}" SpecialFunc="None">
     <Declaration><![CDATA[///#########################################################
 ///Function block to write parameter in Nc.

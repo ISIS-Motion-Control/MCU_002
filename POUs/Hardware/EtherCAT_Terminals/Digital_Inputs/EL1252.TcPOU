@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL1252" Id="{89d3ff0e-6db9-4001-9d08-c10173794a83}" SpecialFunc="None">
     <Declaration><![CDATA[//EL1252 or EL1252-0050 | 2-channel digitl input terminal with timestamp
 FUNCTION_BLOCK EL1252

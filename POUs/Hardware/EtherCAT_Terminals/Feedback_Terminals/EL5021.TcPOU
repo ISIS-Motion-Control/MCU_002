@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL5021" Id="{7f517c2d-3257-42d3-9c58-98a243359439}" SpecialFunc="None">
     <Declaration><![CDATA[//EL5021 | 1-channel Sin/Cos encoder
 FUNCTION_BLOCK EL5021

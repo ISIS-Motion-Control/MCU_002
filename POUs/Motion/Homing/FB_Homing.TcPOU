@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_Homing" Id="{9504e6ea-30a8-43fd-9cc1-4227ce39269a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Homing
 VAR_INPUT

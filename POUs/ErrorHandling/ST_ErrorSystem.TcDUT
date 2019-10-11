@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <DUT Name="ST_ErrorSystem" Id="{7e9a851b-2b87-4b78-9f7e-1a9f1c210ec1}">
     <Declaration><![CDATA[TYPE ST_ErrorSystem :
 STRUCT

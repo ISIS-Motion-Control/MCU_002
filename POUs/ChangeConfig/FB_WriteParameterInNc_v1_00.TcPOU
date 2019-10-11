@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_WriteParameterInNc_v1_00" Id="{5aa08b4f-0a88-49b1-bf14-92150782485c}" SpecialFunc="None">
     <Declaration><![CDATA[///#########################################################
 ///Function block to write parameter in Nc.
