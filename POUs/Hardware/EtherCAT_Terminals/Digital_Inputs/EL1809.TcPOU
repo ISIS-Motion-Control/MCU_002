@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL1809" Id="{1a348214-209a-44e9-9088-e1b46b9010e2}" SpecialFunc="None">
     <Declaration><![CDATA[///EL1809 | HD EtherCAT Terminals, 16-channel digital input 24 V DC, 3 ms
 FUNCTION_BLOCK EL1809

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL7047" Id="{625f3396-b299-406a-b5d2-b0a08c90490b}" SpecialFunc="None">
     <Declaration><![CDATA[//EL7037 | Stepper motor terminal, 50V DC, 5A, Vector Control, Incremental Encoder
 FUNCTION_BLOCK EL7047

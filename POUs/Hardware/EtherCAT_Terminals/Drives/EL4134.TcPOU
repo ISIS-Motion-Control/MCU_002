@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL4134" Id="{e9df39e1-a5f9-49a9-a316-7842ed5605cf}" SpecialFunc="None">
     <Declaration><![CDATA[//EL4134 | 4-channel analog output terminal, -10..+10V, 16 bit
 FUNCTION_BLOCK EL4134

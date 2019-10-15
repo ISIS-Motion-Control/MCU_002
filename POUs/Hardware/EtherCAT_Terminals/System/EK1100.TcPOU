@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EK1100" Id="{658f73e7-ff3e-4539-b62c-4f4914e2b326}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK EK1100
 

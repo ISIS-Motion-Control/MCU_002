@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL2252" Id="{1cc9bdce-6ea8-4421-a606-54f74ba031be}" SpecialFunc="None">
     <Declaration><![CDATA[///EL2252 | XFC, 2-channel digital output terminal with time stamp, tri-state
 FUNCTION_BLOCK EL2252
