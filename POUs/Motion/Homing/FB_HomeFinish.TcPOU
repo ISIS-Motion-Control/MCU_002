@@ -3,56 +3,56 @@
   <POU Name="FB_HomeFinish" Id="{f6f53a7c-585d-4cc4-b17e-8b71b5fa8538}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomeFinish
 VAR_INPUT
-	En: BOOL;
-	bReset: BOOL;
-    bExecute: BOOL;	
+    En: BOOL;
+    bReset: BOOL;
+    bExecute: BOOL;
     nCmdData: UINT;
-	bSofLimEnableLow: BOOL:=TRUE;
-	bSofLimEnableHigh: BOOL:=TRUE;			
+    bSofLimEnableLow: BOOL:=TRUE;
+    bSofLimEnableHigh: BOOL:=TRUE;
 END_VAR
 VAR_IN_OUT
-	Axis: AXIS_REF;
+    Axis: AXIS_REF;
 END_VAR
 VAR_OUTPUT
-	EnO: BOOL;	
-	bBusy: BOOL;
-	bDone: BOOL;
-	bError: BOOL;
-	nErrorId: UDINT;
+    EnO: BOOL;
+    bBusy: BOOL;
+    bDone: BOOL;
+    bError: BOOL;
+    nErrorId: UDINT;
 END_VAR
-VAR		
-	fbHomewriteSoftLimEnable:FB_HomeWriteSoftLimEnable;	
-	fbExecuteRiseEdge: R_TRIG;	
-	bExecuteWriteNC:BOOL:=FALSE;
-	nState:INT:=0;
+VAR
+    fbHomewriteSoftLimEnable:FB_HomeWriteSoftLimEnable;
+    fbExecuteRiseEdge: R_TRIG;
+    bExecuteWriteNC:BOOL:=FALSE;
+    nState:INT:=0;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[En:=EnO;
 IF bReset THEN
-	bError:=FALSE;
-	nErrorId:=0;
-END_IF 
+    bError:=FALSE;
+    nErrorId:=0;
+END_IF
 
 IF NOT bExecute THEN
   bExecuteWriteNC:=FALSE;
   fbHomewriteSoftLimEnable.bSofLimEnableLow:=bSofLimEnableLow;
-  fbHomewriteSoftLimEnable.bSofLimEnableHigh:=bSofLimEnableHigh;   
+  fbHomewriteSoftLimEnable.bSofLimEnableHigh:=bSofLimEnableHigh;
   nState:=0;
 END_IF
 
 fbExecuteRiseEdge(CLK:=bExecute);
 IF fbExecuteRiseEdge.Q THEN
-  bExecuteWriteNC:=TRUE;  
+  bExecuteWriteNC:=TRUE;
   fbHomewriteSoftLimEnable.bSofLimEnableLow:=bSofLimEnableLow;
   fbHomewriteSoftLimEnable.bSofLimEnableHigh:=bSofLimEnableHigh;
 END_IF
 
 // Write to NC (disable soft limits)
 fbHomewriteSoftLimEnable(
-	En:=En,
-	bExecute:=bExecuteWriteNC AND bExecute,
-	Axis:=Axis,
-	bReset:=bReset,	
+    En:=En,
+    bExecute:=bExecuteWriteNC AND bExecute,
+    Axis:=Axis,
+    bReset:=bReset,
 );
 
 bBusy:=fbHomewriteSoftLimEnable.bBusy;

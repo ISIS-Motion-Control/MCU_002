@@ -3,22 +3,22 @@
   <POU Name="FB_Axis" Id="{45901cd0-c6d2-4114-b7cf-de832171219f}" SpecialFunc="None">
     <Declaration><![CDATA[///#########################################################
 ///Function block to run a virtual drive with Nc
-///	Library:		
-///	Tc2_MC2.lib
+/// Library:
+/// Tc2_MC2.lib
 ///
-///	Global Variables:
-///	
-///	Data types:
-///	
-///	External functions:
+/// Global Variables:
+///
+/// Data types:
+///
+/// External functions:
 ///
 ///###########################################################
 FUNCTION_BLOCK FB_Axis
 VAR
-	sVersion: STRING:='1.0.4';	
-	masterAxis			:	ST_GearAxis :=(index:=1, ratio:=0) ;
-	
-	i: UINT;
+    sVersion: STRING:='1.0.4';
+    masterAxis          :   ST_GearAxis :=(index:=1, ratio:=0) ;
+
+    i: UINT;
 END_VAR
 VAR_INPUT
 
@@ -28,24 +28,24 @@ VAR_OUTPUT
 END_VAR
 
 VAR_IN_OUT
-	stAxisStruct: ST_AxisStruct;
+    stAxisStruct: ST_AxisStruct;
 END_VAR
-VAR	
-	fbReset: MC_Reset;
-	fbPower: MC_Power;
-	fbStop: MC_Stop;
-	fbHalt: MC_Halt;
-	fbJog: MC_Jog;
-	fbMoveAbsolute: MC_MoveAbsolute;
-	fbMoveVelocity: MC_MoveVelocity;
-	fbMoveRelative: MC_MoveRelative;
-	fbMoveModulo: MC_MoveModulo;	
-	fbGearIn: MC_GearIn;
-	fbGearOut: MC_GearOut;
-	fbHome: FB_Homing;
-	fbExecuteRiseEdge: R_TRIG;
-	fbStopRiseEdge: R_TRIG;
-	fbResetRiseEdge: R_TRIG;
+VAR
+    fbReset: MC_Reset;
+    fbPower: MC_Power;
+    fbStop: MC_Stop;
+    fbHalt: MC_Halt;
+    fbJog: MC_Jog;
+    fbMoveAbsolute: MC_MoveAbsolute;
+    fbMoveVelocity: MC_MoveVelocity;
+    fbMoveRelative: MC_MoveRelative;
+    fbMoveModulo: MC_MoveModulo;
+    fbGearIn: MC_GearIn;
+    fbGearOut: MC_GearOut;
+    fbHome: FB_Homing;
+    fbExecuteRiseEdge: R_TRIG;
+    fbStopRiseEdge: R_TRIG;
+    fbResetRiseEdge: R_TRIG;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[stAxisStruct.Axis.ReadStatus();
@@ -80,163 +80,163 @@ stAxisStruct.status.bFwEnabled:= stAxisStruct.inputs.bLimitFwd;
 stAxisStruct.status.bBwEnabled:= stAxisStruct.inputs.bLimitBwd;
 
 FOR i:= 1 TO GVL_APP.axisNum DO
-	IF (stAxisStruct.slaveAxisRatio[i]<>0) THEN
-		stAxisStruct.status.bFwEnabled:=stAxisStruct.status.bFwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bBwEnabled, GVL.axes[i].status.bFwEnabled);
-		stAxisStruct.status.bBwEnabled:=stAxisStruct.status.bBwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bFwEnabled, GVL.axes[i].status.bBwEnabled);
-	END_IF
+    IF (stAxisStruct.slaveAxisRatio[i]<>0) THEN
+        stAxisStruct.status.bFwEnabled:=stAxisStruct.status.bFwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bBwEnabled, GVL.axes[i].status.bFwEnabled);
+        stAxisStruct.status.bBwEnabled:=stAxisStruct.status.bBwEnabled AND SEL(stAxisStruct.slaveAxisRatio[i]>0, GVL.axes[i].status.bFwEnabled, GVL.axes[i].status.bBwEnabled);
+    END_IF
 END_FOR
 
 
 (*Power*)
-	fbPower.Enable:=stAxisStruct.control.bEnable;
-	fbPower.Enable_Positive:= stAxisStruct.status.bFwEnabled;	
-	fbPower.Enable_Negative:= stAxisStruct.status.bBwEnabled;
-	fbPower.Override:= stAxisStruct.config.fOverride;
-	stAxisStruct.status.bEnabled:=fbPower.Status;
+    fbPower.Enable:=stAxisStruct.control.bEnable;
+    fbPower.Enable_Positive:= stAxisStruct.status.bFwEnabled;
+    fbPower.Enable_Negative:= stAxisStruct.status.bBwEnabled;
+    fbPower.Override:= stAxisStruct.config.fOverride;
+    stAxisStruct.status.bEnabled:=fbPower.Status;
 
-(*Stop*)	
-	fbStop.Execute:= stAxisStruct.control.bStop;
-	fbStop.Deceleration:= stAxisStruct.config.fDeceleration;
-	
+(*Stop*)
+    fbStop.Execute:= stAxisStruct.control.bStop;
+    fbStop.Deceleration:= stAxisStruct.config.fDeceleration;
+
 IF stAxisStruct.control.bStop AND stAxisStruct.Axis.Status.Stopping THEN
-	stAxisStruct.control.bStop:=FALSE;
+    stAxisStruct.control.bStop:=FALSE;
 END_IF
-				
+
 (*Reset*)
-	fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.status.bError;
+    fbReset.Execute:=stAxisStruct.control.bReset AND stAxisStruct.status.bError;
 
 IF stAxisStruct.control.bReset AND NOT stAxisStruct.status.bError THEN
-	stAxisStruct.control.bReset:=FALSE;
+    stAxisStruct.control.bReset:=FALSE;
 END_IF
-	
+
 CASE stAxisStruct.control.eCommand OF
-	MotionFunctions.MoveAbsolute:
-		fbMoveAbsolute.Execute:=stAxisStruct.control.bExecute;
-		fbMoveAbsolute.Position:=stAxisStruct.config.fPosition;
-		fbMoveAbsolute.Velocity:=ABS(stAxisStruct.config.fVelocity);
-		fbMoveAbsolute.Acceleration:=stAxisStruct.config.fAcceleration;
-		fbMoveAbsolute.Deceleration:=stAxisStruct.config.fDeceleration;
-				
-	MotionFunctions.MoveRelative:
-		fbMoveRelative.Execute:=stAxisStruct.control.bExecute;
-		fbMoveRelative.Distance:=stAxisStruct.config.fPosition;
-		fbMoveRelative.Velocity:=ABS(stAxisStruct.config.fVelocity);
-		fbMoveRelative.Acceleration:=stAxisStruct.config.fAcceleration;
-		fbMoveRelative.Deceleration:=stAxisStruct.config.fDeceleration;
-				
-	MotionFunctions.Jog:
-		fbJog.JogForward:=stAxisStruct.control.bJogFwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
-		fbJog.JogBackwards:=stAxisStruct.control.bJogBwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
-		fbJog.Mode:=0;
-		fbJog.Velocity:=stAxisStruct.config.fVelocity;
-		fbJog.Acceleration:=stAxisStruct.config.fAcceleration;
-		fbJog.Deceleration:=stAxisStruct.config.fDeceleration;
-				
-	MotionFunctions.MoveVelocity:
-		fbMoveVelocity.Execute:=stAxisStruct.control.bExecute;
-		fbMoveVelocity.Velocity:=ABS(stAxisStruct.config.fVelocity);
-		fbMoveVelocity.Acceleration:=stAxisStruct.config.fAcceleration;
-		fbMoveVelocity.Deceleration:=stAxisStruct.config.fDeceleration;
-		fbMoveVelocity.Direction:=SEL(stAxisStruct.config.fVelocity<0, MC_Positive_Direction, MC_Negative_Direction);
+    MotionFunctions.MoveAbsolute:
+        fbMoveAbsolute.Execute:=stAxisStruct.control.bExecute;
+        fbMoveAbsolute.Position:=stAxisStruct.config.fPosition;
+        fbMoveAbsolute.Velocity:=ABS(stAxisStruct.config.fVelocity);
+        fbMoveAbsolute.Acceleration:=stAxisStruct.config.fAcceleration;
+        fbMoveAbsolute.Deceleration:=stAxisStruct.config.fDeceleration;
 
-	MotionFunctions.Movemodulo:
-		fbMoveModulo.Execute:=stAxisStruct.control.bExecute;
-		fbMoveModulo.Position:=stAxisStruct.config.fPosition;
-		fbMoveModulo.Velocity:=ABS(stAxisStruct.config.fVelocity);
-		fbMoveModulo.Acceleration:=stAxisStruct.config.fAcceleration; 
-		fbMoveModulo.Deceleration:=stAxisStruct.config.fDeceleration;
+    MotionFunctions.MoveRelative:
+        fbMoveRelative.Execute:=stAxisStruct.control.bExecute;
+        fbMoveRelative.Distance:=stAxisStruct.config.fPosition;
+        fbMoveRelative.Velocity:=ABS(stAxisStruct.config.fVelocity);
+        fbMoveRelative.Acceleration:=stAxisStruct.config.fAcceleration;
+        fbMoveRelative.Deceleration:=stAxisStruct.config.fDeceleration;
 
-				
-	MotionFunctions.GearIn:
-		fbGearIn.Execute:=			stAxisStruct.control.bExecute;
-		fbGearIn.RatioNumerator:=	masterAxis.Ratio;
-		fbGearIn.RatioDenominator:=1;		//kept static as numerator is LREAL and consistent with multigearing
-		
-		IF NOT fbGearIn.InGear THEN
-			masterAxis.Index:=  stAxisStruct.masterAxis.index;
-			masterAxis.Ratio:= stAxisStruct.masterAxis.ratio;
-		END_IF
-		
-		IF fbGearIn.InGear AND (GVL.axes[masterAxis.Index].slaveAxisRatio[GVL.iAxis]=0) THEN	//only update index and ratios on new gearIns, change of ratio requires gearOut
-			GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=masterAxis.ratio;
-		END_IF
-	
-	MotionFunctions.GearOut:
-		fbGearOut.Execute:=			stAxisStruct.control.bExecute;
-		
-		IF fbGearOut.Done THEN
-			GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=0; //Clear slave ratio from master axis slave array
-		END_IF
-	
-	MotionFunctions.MultiGearIn:
-			
-	MotionFunctions.Home:
-		fbHome.bExecute:= stAxisStruct.control.bExecute;
-		fbHome.bReset:= stAxisStruct.control.bReset;
-		fbHome.bStop:= stAxisStruct.control.bStop;
-		fbHome.nHomeProc:= stAxisStruct.config.nHomeSeq;
-		fbHome.bLimitBwd:= stAxisStruct.inputs.bLimitBwd; 
-		fbHome.bLimitFwd:= stAxisStruct.inputs.bLimitFwd; 
-		fbHome.bEncLatch:= stAxisStruct.inputs.bEncLatch;
-		fbHome.bHomeSensor:= stAxisStruct.inputs.bHomeSensor;
-		fbHome.fHomePosition:= 0; 
-		stAxisStruct.status.bHomed:=fbHome.bHomed;
-				
-END_CASE			
+    MotionFunctions.Jog:
+        fbJog.JogForward:=stAxisStruct.control.bJogFwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
+        fbJog.JogBackwards:=stAxisStruct.control.bJogBwd AND NOT (stAxisStruct.control.bExecute OR stAxisStruct.status.bError);
+        fbJog.Mode:=0;
+        fbJog.Velocity:=stAxisStruct.config.fVelocity;
+        fbJog.Acceleration:=stAxisStruct.config.fAcceleration;
+        fbJog.Deceleration:=stAxisStruct.config.fDeceleration;
+
+    MotionFunctions.MoveVelocity:
+        fbMoveVelocity.Execute:=stAxisStruct.control.bExecute;
+        fbMoveVelocity.Velocity:=ABS(stAxisStruct.config.fVelocity);
+        fbMoveVelocity.Acceleration:=stAxisStruct.config.fAcceleration;
+        fbMoveVelocity.Deceleration:=stAxisStruct.config.fDeceleration;
+        fbMoveVelocity.Direction:=SEL(stAxisStruct.config.fVelocity<0, MC_Positive_Direction, MC_Negative_Direction);
+
+    MotionFunctions.Movemodulo:
+        fbMoveModulo.Execute:=stAxisStruct.control.bExecute;
+        fbMoveModulo.Position:=stAxisStruct.config.fPosition;
+        fbMoveModulo.Velocity:=ABS(stAxisStruct.config.fVelocity);
+        fbMoveModulo.Acceleration:=stAxisStruct.config.fAcceleration;
+        fbMoveModulo.Deceleration:=stAxisStruct.config.fDeceleration;
+
+
+    MotionFunctions.GearIn:
+        fbGearIn.Execute:=          stAxisStruct.control.bExecute;
+        fbGearIn.RatioNumerator:=   masterAxis.Ratio;
+        fbGearIn.RatioDenominator:=1;       //kept static as numerator is LREAL and consistent with multigearing
+
+        IF NOT fbGearIn.InGear THEN
+            masterAxis.Index:=  stAxisStruct.masterAxis.index;
+            masterAxis.Ratio:= stAxisStruct.masterAxis.ratio;
+        END_IF
+
+        IF fbGearIn.InGear AND (GVL.axes[masterAxis.Index].slaveAxisRatio[GVL.iAxis]=0) THEN    //only update index and ratios on new gearIns, change of ratio requires gearOut
+            GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=masterAxis.ratio;
+        END_IF
+
+    MotionFunctions.GearOut:
+        fbGearOut.Execute:=         stAxisStruct.control.bExecute;
+
+        IF fbGearOut.Done THEN
+            GVL.axes[masterAxis.index].slaveAxisRatio[GVL.iAxis]:=0; //Clear slave ratio from master axis slave array
+        END_IF
+
+    MotionFunctions.MultiGearIn:
+
+    MotionFunctions.Home:
+        fbHome.bExecute:= stAxisStruct.control.bExecute;
+        fbHome.bReset:= stAxisStruct.control.bReset;
+        fbHome.bStop:= stAxisStruct.control.bStop;
+        fbHome.nHomeProc:= stAxisStruct.config.nHomeSeq;
+        fbHome.bLimitBwd:= stAxisStruct.inputs.bLimitBwd;
+        fbHome.bLimitFwd:= stAxisStruct.inputs.bLimitFwd;
+        fbHome.bEncLatch:= stAxisStruct.inputs.bEncLatch;
+        fbHome.bHomeSensor:= stAxisStruct.inputs.bHomeSensor;
+        fbHome.fHomePosition:= 0;
+        stAxisStruct.status.bHomed:=fbHome.bHomed;
+
+END_CASE
 
 (*Busy*)
 stAxisStruct.status.bBusy:=stAxisStruct.Axis.Status.HasJob;
 
 (*Done*)
 IF fbMoveAbsolute.Done OR fbMoveModulo.Done OR fbMoveRelative.Done THEN
-		stAxisStruct.status.bDone:=TRUE;
+        stAxisStruct.status.bDone:=TRUE;
 ELSIF stAxisStruct.Axis.Status.HasJob THEN
-		stAxisStruct.status.bDone:=FALSE;
+        stAxisStruct.status.bDone:=FALSE;
 END_IF
 
 (*Error from functions and Nc*)
-IF stAxisStruct.status.bError and not stAxisStruct.control.bReset THEN 
-	stAxisStruct.status.bError:=stAxisStruct.status.bError;
-	stAxisStruct.status.nErrorID:=stAxisStruct.status.nErrorID;
+IF stAxisStruct.status.bError and not stAxisStruct.control.bReset THEN
+    stAxisStruct.status.bError:=stAxisStruct.status.bError;
+    stAxisStruct.status.nErrorID:=stAxisStruct.status.nErrorID;
 ELSIF fbPower.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbPower.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbPower.ErrorID;
 ELSIF fbHalt.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbHalt.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbHalt.ErrorID;
 ELSIF fbJog.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbJog.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbJog.ErrorID;
 ELSIF fbMoveVelocity.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbMoveVelocity.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbMoveVelocity.ErrorID;
 ELSIF fbMoveRelative.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbMoveRelative.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbMoveRelative.ErrorID;
 ELSIF fbMoveAbsolute.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbMoveAbsolute.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbMoveAbsolute.ErrorID;
 ELSIF fbMoveModulo.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbMoveModulo.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbMoveModulo.ErrorID;
 ELSIF fbHome.bError THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbHome.nErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbHome.nErrorID;
 ELSIF fbGearIn.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
 ELSIF fbGearIn.Error THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbGearIn.ErrorID;
 ELSIF fbGearOut.Error and stAxisStruct.Axis.Status.Coupled THEN
-	stAxisStruct.status.bError:=TRUE;
-	stAxisStruct.status.nErrorId:=fbGearOut.ErrorID;
+    stAxisStruct.status.bError:=TRUE;
+    stAxisStruct.status.nErrorId:=fbGearOut.ErrorID;
 ELSIF stAxisStruct.Axis.Status.Error  THEN
-	stAxisStruct.status.bError:=stAxisStruct.Axis.Status.Error;
-	stAxisStruct.status.nErrorId:=stAxisStruct.Axis.Status.ErrorID;
+    stAxisStruct.status.bError:=stAxisStruct.Axis.Status.Error;
+    stAxisStruct.status.nErrorId:=stAxisStruct.Axis.Status.ErrorID;
 ELSE
-	stAxisStruct.status.bError:=FALSE;
-	stAxisStruct.status.nErrorId:=0;
+    stAxisStruct.status.bError:=FALSE;
+    stAxisStruct.status.nErrorId:=0;
 END_IF;
 
 stAxisStruct.status.bGeared:= stAxisStruct.Axis.Status.Coupled;
@@ -246,9 +246,9 @@ stAxisStruct.status.fActVelocity:=stAxisStruct.Axis.NcToPlc.ActVelo;
 
 (*Actual Position*)
 IF stAxisStruct.Axis.Status.OpMode.Modulo THEN
-	stAxisStruct.status.fActPosition:=stAxisStruct.Axis.NcToPlc.ModuloActPos;
+    stAxisStruct.status.fActPosition:=stAxisStruct.Axis.NcToPlc.ModuloActPos;
 ELSE
-	stAxisStruct.status.fActPosition:=stAxisStruct.Axis.NcToPlc.ActPos;
+    stAxisStruct.status.fActPosition:=stAxisStruct.Axis.NcToPlc.ActPos;
 END_IF
 
 (*Reset bExecute*)
