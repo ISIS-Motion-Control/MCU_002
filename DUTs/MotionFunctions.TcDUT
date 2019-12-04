@@ -5,15 +5,15 @@
 {attribute 'strict'}
 TYPE MotionFunctions :
 (
-	MoveAbsolute	:= 0,
-	MoveRelative	:=1,
-	Jog				:=2,
-	MoveVelocity	:=3,
-	MoveModulo		:=4,
-	GearIn			:=5,
-	GearOut			:=6,
-	MultiGearIn		:=7,
-	Home			:=10
+    MoveAbsolute    := 0,
+    MoveRelative    :=1,
+    Jog             :=2,
+    MoveVelocity    :=3,
+    MoveModulo      :=4,
+    GearIn          :=5,
+    GearOut         :=6,
+    MultiGearIn     :=7,
+    Home            :=10
 ):=Jog;
 END_TYPE
 

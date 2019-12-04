@@ -5,22 +5,22 @@
 FUNCTION_BLOCK EL1008
 
 VAR_INPUT
-	En				: BOOL;
-	iTerminal_ID	: INT;
-	ErrorSystem		: POINTER TO ST_ErrorSystem;
+    En              : BOOL;
+    iTerminal_ID    : INT;
+    ErrorSystem     : POINTER TO ST_ErrorSystem;
 END_VAR
 
 VAR_OUTPUT
-	EnO		: BOOL;
-	bError	: BOOL;
+    EnO     : BOOL;
+    bError  : BOOL;
 END_VAR
 
 VAR
-	WcState_WcState		AT %I*	: BOOL;
-	InfoData_State		AT %I*	: UINT;
-	
-	//FB-s
-	EL1008_Error	: FB_TerminalError;
+    WcState_WcState     AT %I*  : BOOL;
+    InfoData_State      AT %I*  : UINT;
+
+    //FB-s
+    EL1008_Error    : FB_TerminalError;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -31,12 +31,12 @@ EnO:=En;
 
 //Error FB instance
 EL1008_Error(
-	En					:= TRUE,
-	iTerminal_ID		:= iTerminal_ID,
-	bWcState			:= WcState_WcState,
-	uiInfoData_State	:= InfoData_State,
-	pErrorSystem		:= ErrorSystem,
-	bError				=> bError,
+    En                  := TRUE,
+    iTerminal_ID        := iTerminal_ID,
+    bWcState            := WcState_WcState,
+    uiInfoData_State    := InfoData_State,
+    pErrorSystem        := ErrorSystem,
+    bError              => bError,
 );
 ]]></ST>
     </Implementation>

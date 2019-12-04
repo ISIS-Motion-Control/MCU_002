@@ -3,51 +3,51 @@
   <POU Name="FB_HomePrepare" Id="{44b4f5e1-854c-4705-82a0-c1e3db13fb33}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomePrepare
 VAR_INPUT
-	En: BOOL;
-	bReset: BOOL;
-    bExecute: BOOL;	
-    nCmdData: UINT;		
+    En: BOOL;
+    bReset: BOOL;
+    bExecute: BOOL;
+    nCmdData: UINT;
 END_VAR
 VAR_IN_OUT
-	Axis: AXIS_REF;
+    Axis: AXIS_REF;
 END_VAR
 VAR_OUTPUT
-	EnO: BOOL;	
-	bBusy: BOOL;
-	bDone: BOOL;
-	bError: BOOL;
-	nErrorId: UDINT;
-	bSofLimEnableLowOriginal: BOOL:=TRUE;
-	bSofLimEnableHighOriginal: BOOL:=TRUE;	
-	fVelocityToCam: LREAL:=0;
-	fVelocityFromCam: LREAL:=0;		
+    EnO: BOOL;
+    bBusy: BOOL;
+    bDone: BOOL;
+    bError: BOOL;
+    nErrorId: UDINT;
+    bSofLimEnableLowOriginal: BOOL:=TRUE;
+    bSofLimEnableHighOriginal: BOOL:=TRUE;
+    fVelocityToCam: LREAL:=0;
+    fVelocityFromCam: LREAL:=0;
 END_VAR
 VAR
-	fbHomeReadSoftLimEnable:FB_HomeReadSoftLimEnable;	
-	fbHomeDisableSoftLimEnable:FB_HomeWriteSoftLimEnable;
-	fbHomeReadNCVelocities: FB_HomeReadNcVelocities;
-	fbHomeResetCalibrationFlag:MC_Home;   //Only used for reset of calibration flag
-	fbExecuteRiseEdge: R_TRIG;
-	bExecuteReadNC:BOOL:=FALSE;
-	bExecuteWriteNC:BOOL:=FALSE;
-	nState:INT:=0;
+    fbHomeReadSoftLimEnable:FB_HomeReadSoftLimEnable;
+    fbHomeDisableSoftLimEnable:FB_HomeWriteSoftLimEnable;
+    fbHomeReadNCVelocities: FB_HomeReadNcVelocities;
+    fbHomeResetCalibrationFlag:MC_Home;   //Only used for reset of calibration flag
+    fbExecuteRiseEdge: R_TRIG;
+    bExecuteReadNC:BOOL:=FALSE;
+    bExecuteWriteNC:BOOL:=FALSE;
+    nState:INT:=0;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[En:=EnO;
 IF bReset THEN
-	bError:=FALSE;
-	nErrorId:=0;
-END_IF 
+    bError:=FALSE;
+    nErrorId:=0;
+END_IF
 
 IF NOT bExecute THEN
   bExecuteReadNC:=FALSE;
-  bExecuteWriteNC:=FALSE;   
+  bExecuteWriteNC:=FALSE;
   nState:=0;
 END_IF
 
 fbExecuteRiseEdge(CLK:=bExecute);
 IF fbExecuteRiseEdge.Q THEN
-  bExecuteReadNC:=TRUE;  
+  bExecuteReadNC:=TRUE;
 END_IF
 
 // Read from NC
@@ -59,10 +59,10 @@ fbHomeReadNCVelocities(
 );
 
 fbHomeReadSoftLimEnable(
-	En:=En,
-	bExecute:=bExecuteReadNC AND bExecute,
-	Axis:=Axis,
-	bReset:=bReset,	
+    En:=En,
+    bExecute:=bExecuteReadNC AND bExecute,
+    Axis:=Axis,
+    bReset:=bReset,
 );
 
 // Reset calibration flag
@@ -73,23 +73,23 @@ fbHomeResetCalibrationFlag(
 );
 
 bSofLimEnableLowOriginal:=fbHomeReadSoftLimEnable.bSofLimEnableLow;
-bSofLimEnableHighOriginal:=fbHomeReadSoftLimEnable.bSofLimEnableHigh;	
+bSofLimEnableHighOriginal:=fbHomeReadSoftLimEnable.bSofLimEnableHigh;
 
 fVelocityToCam:=fbHomeReadNCVelocities.fVelocityToCam;
 fVelocityFromCam:=fbHomeReadNCVelocities.fVelocityFromCam;
 
 IF bExecuteReadNC AND bExecute AND fbHomeReadSoftLimEnable.bDone THEN
-	fbHomeDisableSoftLimEnable.bSofLimEnableHigh:=FALSE;
-	fbHomeDisableSoftLimEnable.bSofLimEnableLow:=FALSE;
-	bExecuteWriteNC:=TRUE; //Always write (only needed if enabled actually)
+    fbHomeDisableSoftLimEnable.bSofLimEnableHigh:=FALSE;
+    fbHomeDisableSoftLimEnable.bSofLimEnableLow:=FALSE;
+    bExecuteWriteNC:=TRUE; //Always write (only needed if enabled actually)
 END_IF
 
 // Write to NC (disable soft limits)
 fbHomeDisableSoftLimEnable(
-	En:=En,
-	bExecute:=bExecuteWriteNC AND bExecute,
-	Axis:=Axis,
-	bReset:=bReset,	
+    En:=En,
+    bExecute:=bExecuteWriteNC AND bExecute,
+    Axis:=Axis,
+    bReset:=bReset,
 );
 
 bBusy:=fbHomeReadSoftLimEnable.bBusy OR fbHomeDisableSoftLimEnable.bBusy OR fbHomeReadNCVelocities.bBusy OR fbHomeResetCalibrationFlag.Busy;
