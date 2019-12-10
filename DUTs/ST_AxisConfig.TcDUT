@@ -11,6 +11,7 @@ STRUCT
     fDeceleration       :   LREAL;
     fPosition           :   LREAL;          //Used for absolute positioning
     nHomeSeq            :   UINT;           //Homing sequence to perform
+	fHomePosition       :   LREAL;          //Used for absolute positioning
     eRestorePosition    :   RestorePosition;
     //Restore position of incremental axis after loss of power to the CPU, 0=don't restore, 1=restore but don't home, 2=restore and home
 
