@@ -10,6 +10,10 @@ END_VAR
 
 VAR_GLOBAL CONSTANT
     cSizeOfErrorData : UINT := 256;
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    axesPersistent  : ARRAY [1..gvl_app.axisNum] OF ST_AxisPersistent;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>
