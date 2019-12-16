@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
-  <POU Name="EL5002" Id="{d69b0967-8c1a-4603-8de6-a922d8c7d18e}" SpecialFunc="None">
-    <Declaration><![CDATA[//EL5002 | 2-chennel SSI absolute encoder terminal
-FUNCTION_BLOCK EL5002
+  <POU Name="EL7037" Id="{27d5d25d-3c68-47ea-8be3-e1716776c522}" SpecialFunc="None">
+    <Declaration><![CDATA[//EL7037 | Stepper motor terminal, 24V DC, 1.5A
+FUNCTION_BLOCK EL7037
 
 VAR_INPUT
     En: BOOL;
@@ -20,7 +20,7 @@ VAR
     InfoData_State AT %I*: UINT;
 
     //FB-s
-    EL5002_Error    : FB_TerminalError;
+    EL7037_Error    : FB_TerminalError;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -30,7 +30,7 @@ END_VAR
 
 EnO:=En;
 
-EL5002_Error(
+EL7037_Error(
     En := TRUE,
     iTerminal_ID := iTerminal_ID,
     bWcState := FALSE,
@@ -40,13 +40,9 @@ EL5002_Error(
 );
 ]]></ST>
     </Implementation>
-    <LineIds Name="EL5002">
+    <LineIds Name="EL7037">
+      <LineId Id="31" Count="13" />
       <LineId Id="9" Count="0" />
-      <LineId Id="31" Count="1" />
-      <LineId Id="34" Count="1" />
-      <LineId Id="37" Count="7" />
-      <LineId Id="33" Count="0" />
-      <LineId Id="56" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

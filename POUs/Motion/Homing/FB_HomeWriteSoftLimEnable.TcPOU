@@ -1,51 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.10">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_HomeWriteSoftLimEnable" Id="{98a18836-422d-42af-a096-4f12604828b3}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomeWriteSoftLimEnable
 VAR_INPUT
-	En: BOOL;
-	bReset: BOOL;
-    bExecute: BOOL;		
-	bSofLimEnableLow: BOOL:=TRUE;
-	bSofLimEnableHigh: BOOL:=TRUE;
+    En: BOOL;
+    bReset: BOOL;
+    bExecute: BOOL;
+    bSofLimEnableLow: BOOL:=TRUE;
+    bSofLimEnableHigh: BOOL:=TRUE;
 END_VAR
 VAR_IN_OUT
-	Axis: AXIS_REF;
+    Axis: AXIS_REF;
 END_VAR
 VAR_OUTPUT
-	EnO: BOOL;	
-	bBusy: BOOL;
-	bDone: BOOL;
-	bError: BOOL;
-	nErrorId: UDINT;	
+    EnO: BOOL;
+    bBusy: BOOL;
+    bDone: BOOL;
+    bError: BOOL;
+    nErrorId: UDINT;
 END_VAR
 VAR
-	fbExecuteRiseEdge: R_TRIG;
-	fbWriteSoftLimEnableLow:FB_WriteParameterInNc_v1_00;
-	fbWriteSoftLimEnableHigh:FB_WriteParameterInNc_v1_00;
+    fbExecuteRiseEdge: R_TRIG;
+    fbWriteSoftLimEnableLow:FB_WriteParameterInNc_v1_00;
+    fbWriteSoftLimEnableHigh:FB_WriteParameterInNc_v1_00;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[En:=EnO;
 IF bReset THEN
-	bError:=FALSE;
-	nErrorId:=0;
-END_IF 
+    bError:=FALSE;
+    nErrorId:=0;
+END_IF
 
 fbExecuteRiseEdge(CLK:=bExecute);
 
 fbWriteSoftLimEnableLow(
-	bExecute:=bExecute,
-	nDeviceGroup:= 16#5000,
-	nIndexOffset:= 16#B,
-	nData:=BOOL_TO_DWORD(bSofLimEnableLow),
-	Axis:= Axis);
-	
+    bExecute:=bExecute,
+    nDeviceGroup:= 16#5000,
+    nIndexOffset:= 16#B,
+    nData:=BOOL_TO_DWORD(bSofLimEnableLow),
+    Axis:= Axis);
+
 fbWriteSoftLimEnableHigh(
-	bExecute:=bExecute,
-	nDeviceGroup:= 16#5000,
-	nIndexOffset:= 16#C,
-	nData:=BOOL_TO_DWORD(bSofLimEnableHigh),
-	Axis:= Axis);
+    bExecute:=bExecute,
+    nDeviceGroup:= 16#5000,
+    nIndexOffset:= 16#C,
+    nData:=BOOL_TO_DWORD(bSofLimEnableHigh),
+    Axis:= Axis);
 
 bBusy:=fbWriteSoftLimEnableLow.bBusy OR fbWriteSoftLimEnableHigh.bBusy;
 bDone:=fbWriteSoftLimEnableLow.bDone AND fbWriteSoftLimEnableHigh.bDone AND bExecute;
