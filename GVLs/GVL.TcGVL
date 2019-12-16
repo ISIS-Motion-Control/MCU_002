@@ -4,7 +4,7 @@
     <Declaration><![CDATA[VAR_GLOBAL
     stErrorSystemCom    : ST_ErrorSystem;
     axes            :   ARRAY [1..GVL_APP.axisNum] OF ST_AxisStruct;    //Global array of axisControl structure for holding axis parameters and controls
-    iAxis           :   UINT;                                       //Index for running axis
+    iAxis           :   UINT;                                           //Index for running axis
 
 END_VAR
 
