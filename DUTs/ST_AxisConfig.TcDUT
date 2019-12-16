@@ -10,7 +10,7 @@ STRUCT
     fAcceleration       :   LREAL;          //Not all FBs use, need to change this, 0 is NC default
     fDeceleration       :   LREAL;
     fPosition           :   LREAL;          //Used for absolute positioning
-	fHomePosition		:	LREAL;			//Used for absolute positioning		
+    fHomePosition       :   LREAL;          //Used for absolute positioning
     nHomeSeq            :   UINT;           //Homing sequence to perform
 
 END_STRUCT
