@@ -6,8 +6,8 @@
 TYPE RestorePosition :
 (
     DontRestore        :=0,
-    RestoreWithoutHome :=1,
-    RestoreWithHome    :=2
+    RestoreWithoutHome :=1
+    //RestoreWithHome    :=2
 );
 END_TYPE]]></Declaration>
   </DUT>
