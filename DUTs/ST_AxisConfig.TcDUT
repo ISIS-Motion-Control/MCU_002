@@ -10,10 +10,12 @@ STRUCT
     fAcceleration       :   LREAL;          //Not all FBs use, need to change this, 0 is NC default
     fDeceleration       :   LREAL;
     fPosition           :   LREAL;          //Used for absolute positioning
+    fHomePosition       :   LREAL;          //Used to home to a value other than 0
     nHomeSeq            :   UINT;           //Homing sequence to perform
+    eRestorePosition    :   RestorePosition;
+    //Restore position of incremental axis after loss of power to the CPU, 0=don't restore, 1=restore but don't home, 2=restore and home
 
 END_STRUCT
-END_TYPE
-]]></Declaration>
+END_TYPE]]></Declaration>
   </DUT>
 </TcPlcObject>
