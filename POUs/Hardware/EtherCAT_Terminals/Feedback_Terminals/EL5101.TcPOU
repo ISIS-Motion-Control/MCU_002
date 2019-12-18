@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="EL5101" Id="{5df30a0c-1331-4fa2-acfe-28b08cfc5f04}" SpecialFunc="None">
     <Declaration><![CDATA[// EL5101 | 1-channel incremental encoder terminal, 5V, RS422
