@@ -174,7 +174,7 @@ CASE stAxisStruct.control.eCommand OF
         fbHome.bReset:= stAxisStruct.control.bReset;
         fbHome.bStop:= stAxisStruct.control.bStop;
         fbHome.nHomeProc:= stAxisStruct.config.nHomeSeq;
-		fbHome.fHomePosition:= stAxisStruct.config.fHomePosition;
+        fbHome.fHomePosition:= stAxisStruct.config.fHomePosition;
         fbHome.bLimitBwd:= stAxisStruct.inputs.bLimitBwd;
         fbHome.bLimitFwd:= stAxisStruct.inputs.bLimitFwd;
         fbHome.bEncLatch:= stAxisStruct.inputs.bEncLatch;
@@ -240,15 +240,15 @@ ELSE
 END_IF;
 
 (*Warnings from functions and Nc*)
-IF stAxisStruct.status.bWarning AND NOT stAxisStruct.control.bReset THEN 
-	stAxisStruct.status.bWarning:=stAxisStruct.status.bWarning;
-	//stAxisStruct.status.nWarningID:=stAxisStruct.status.nWarningID;
+IF stAxisStruct.status.bWarning AND NOT stAxisStruct.control.bReset THEN
+    stAxisStruct.status.bWarning:=stAxisStruct.status.bWarning;
+    //stAxisStruct.status.nWarningID:=stAxisStruct.status.nWarningID;
 ELSIF fbHome.bWarning THEN
-	stAxisStruct.status.bWarning:=stAxisStruct.status.bError;
-	//stAxisStruct.status.nWarningID:=stAxisStruct.status.nWarningID;
+    stAxisStruct.status.bWarning:=stAxisStruct.status.bError;
+    //stAxisStruct.status.nWarningID:=stAxisStruct.status.nWarningID;
 ELSE
-	stAxisStruct.status.bWarning:=FALSE;
-	//stAxisStruct.status.nWarningId:=0;
+    stAxisStruct.status.bWarning:=FALSE;
+    //stAxisStruct.status.nWarningId:=0;
 END_IF;
 
 stAxisStruct.status.bGeared:= stAxisStruct.Axis.Status.Coupled;
