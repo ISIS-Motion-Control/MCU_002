@@ -1,77 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.10">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_HomeToSwitch" Id="{9890b2a1-f87c-4e55-871a-a54ee70e279d}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomeToSwitch
 VAR_INPUT
-	En: BOOL;
-	bReset: BOOL;
-    bExecute: BOOL;	
-    bCamSensor:BOOL;	
-	nSearchDirTwoardsCam: MC_Direction;
-	nSearchDirOffCam: MC_Direction;
-	fHomePosition:LREAL;	
-	fVelocityToCamNC: LREAL; //Velcoity when searching for cam
-	fVelocityFromCamNC: LREAL; // Velocity after found cam (searching for next signal transition)
+    En: BOOL;
+    bReset: BOOL;
+    bExecute: BOOL;
+    bCamSensor:BOOL;
+    nSearchDirTwoardsCam: MC_Direction;
+    nSearchDirOffCam: MC_Direction;
+    fHomePosition:LREAL;
+    fVelocityToCamNC: LREAL; //Velcoity when searching for cam
+    fVelocityFromCamNC: LREAL; // Velocity after found cam (searching for next signal transition)
 END_VAR
 VAR_IN_OUT
-	Axis: AXIS_REF;
+    Axis: AXIS_REF;
 END_VAR
 VAR_OUTPUT
-	EnO: BOOL;	
-	bBusy: BOOL;
-	bDone: BOOL;
-	bHomed:BOOL;
-	bError: BOOL;
-	nErrorId: UDINT;
+    EnO: BOOL;
+    bBusy: BOOL;
+    bDone: BOOL;
+    bHomed:BOOL;
+    bError: BOOL;
+    nErrorId: UDINT;
 END_VAR
 VAR
-	fbHome: MC_Home;	
-	fbWriteHomeDirCamToNC:FB_WriteParameterInNc_v1_00;
-	fbWriteHomeDirSyncToNC:FB_WriteParameterInNc_v1_00;
-	fbWriteHomeModeToNC:FB_WriteParameterInNc_v1_00;
-	fbWriteHomeVelocitiesToNC: FB_HomeWriteNcVelocities;
-	bConfigNCDone:BOOL:=FALSE;
-	fbRTrigg: R_TRIG;
+    fbHome: MC_Home;
+    fbWriteHomeDirCamToNC:FB_WriteParameterInNc_v1_00;
+    fbWriteHomeDirSyncToNC:FB_WriteParameterInNc_v1_00;
+    fbWriteHomeModeToNC:FB_WriteParameterInNc_v1_00;
+    fbWriteHomeVelocitiesToNC: FB_HomeWriteNcVelocities;
+    bConfigNCDone:BOOL:=FALSE;
+    fbRTrigg: R_TRIG;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[En:=EnO;
 IF bReset THEN
-	bConfigNCDone:=FALSE;
-	bError:=FALSE;
-	nErrorId:=0;
-END_IF 
-	
+    bConfigNCDone:=FALSE;
+    bError:=FALSE;
+    nErrorId:=0;
+END_IF
+
 //Start preparation of NC if rising edge on bExecute
 fbRTrigg(CLK:=bExecute);
 IF fbRTrigg.Q THEN
-	bConfigNCDone:=FALSE;
+    bConfigNCDone:=FALSE;
 END_IF
 
- 
+
 fbWriteHomeDirCamToNC(
-	bExecute:=bExecute AND NOT bConfigNCDone,
-	nDeviceGroup:=16#5000,
-	nIndexOffset:=16#101,	//Direction for Calibration Cam Search	
-	nData:=BOOL_TO_DWORD(nSearchDirTwoardsCam=MC_Negative_Direction),//BOOL_TO_DWORD(NOT bSearchDirTwoardsCam),
-	Axis:=Axis
+    bExecute:=bExecute AND NOT bConfigNCDone,
+    nDeviceGroup:=16#5000,
+    nIndexOffset:=16#101,   //Direction for Calibration Cam Search
+    nData:=BOOL_TO_DWORD(nSearchDirTwoardsCam=MC_Negative_Direction),//BOOL_TO_DWORD(NOT bSearchDirTwoardsCam),
+    Axis:=Axis
 );
 
 fbWriteHomeDirSyncToNC(
-	bExecute:= bExecute AND NOT bConfigNCDone,
-	nDeviceGroup:=16#5000 ,
-	nIndexOffset:=16#102 , //Direction for Sync Impuls Search
-	nData:=BOOL_TO_DWORD(nSearchDirOffCam=MC_Negative_Direction),//BOOL_TO_DWORD(NOT bSearchDirOffCam),
-	Axis:= Axis 
+    bExecute:= bExecute AND NOT bConfigNCDone,
+    nDeviceGroup:=16#5000 ,
+    nIndexOffset:=16#102 , //Direction for Sync Impuls Search
+    nData:=BOOL_TO_DWORD(nSearchDirOffCam=MC_Negative_Direction),//BOOL_TO_DWORD(NOT bSearchDirOffCam),
+    Axis:= Axis
 );
 
 fbWriteHomeModeToNC(
-	bExecute:=bExecute AND NOT bConfigNCDone,
-	nDeviceGroup:=16#5000,
-	nIndexOffset:=16#107,  //Reference Mode
-	nData:=1,
-	Axis:=axis);
-	
+    bExecute:=bExecute AND NOT bConfigNCDone,
+    nDeviceGroup:=16#5000,
+    nIndexOffset:=16#107,  //Reference Mode
+    nData:=1,
+    Axis:=axis);
+
 fbWriteHomeVelocitiesToNC(
   En:=En,
   bExecute:=bExecute AND NOT bConfigNCDone,
@@ -83,11 +83,11 @@ fbWriteHomeVelocitiesToNC(
 fbHome.bCalibrationCam:=bCamSensor;
 
 fbHome(
-	Execute:=bExecute AND bConfigNCDone(* AND NOT bError*),
-	Position:=fHomePosition,
-	HomingMode:=0,
-	Axis:=Axis
-	);
+    Execute:=bExecute AND bConfigNCDone(* AND NOT bError*),
+    Position:=fHomePosition,
+    HomingMode:=0,
+    Axis:=Axis
+    );
 bBusy:=(fbHome.Busy OR (NOT bConfigNCDone AND bExecute));
 bDone:=fbHome.Done AND bConfigNCDone;
 bHomed:=Axis.Status.Homed;
@@ -108,7 +108,7 @@ ELSIF fbWriteHomeDirSyncToNC.bError THEN
 ELSIF fbWriteHomeModeToNC.bError THEN
   nErrorId:=fbWriteHomeModeToNC.nErrorId;
 ELSIF fbWriteHomeVelocitiesToNC.bError THEN
-  nErrorId:=fbWriteHomeVelocitiesToNC.nErrorId;  
+  nErrorId:=fbWriteHomeVelocitiesToNC.nErrorId;
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="FB_HomeToSwitch">

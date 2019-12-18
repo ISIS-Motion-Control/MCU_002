@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <Visu Name="MainVisu" Id="{98c8ae72-e756-4d11-b6a5-5914882e2424}">
     <XmlArchive>
       <Data>
@@ -12141,7 +12141,7 @@ GVL.axes[Main.hmiAxisSelection].control.bExecute:=TRUE;"</v>
               <o>
                 <v n="Id">3L</v>
                 <n n="Tag" />
-                <v n="Text">"	"</v>
+                <v n="Text">"   "</v>
               </o>
               <o>
                 <v n="Id">1L</v>
@@ -12161,7 +12161,7 @@ GVL.axes[Main.hmiAxisSelection].control.bExecute:=TRUE;"</v>
               <o>
                 <v n="Id">6L</v>
                 <n n="Tag" />
-                <v n="Text">"	"</v>
+                <v n="Text">"   "</v>
               </o>
               <o>
                 <v n="Id">7L</v>

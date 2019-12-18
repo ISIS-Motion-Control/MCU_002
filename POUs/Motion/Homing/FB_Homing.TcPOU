@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_Homing" Id="{e8b732be-06ce-4dd5-944d-e7ad6eae8e67}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Homing
 VAR_INPUT
-	bExecute: BOOL;
-	bReset: BOOL;
+    bExecute: BOOL;
+    bReset: BOOL;
 	bStop: BOOL;
-	nHomeProc: UINT;
-	bLimitBwd: BOOL;
-	bLimitFwd: BOOL;
-	bEncLatch: BOOL;
-	bHomeSensor: BOOL;
-	fHomePosition: LREAL;
+    nHomeProc: UINT;
+    bLimitBwd: BOOL;
+    bLimitFwd: BOOL;
+    bEncLatch: BOOL;
+    bHomeSensor: BOOL;
+    fHomePosition: LREAL;
 END_VAR
 VAR_IN_OUT
-	Axis: AXIS_REF;
+    Axis: AXIS_REF;
 END_VAR
 VAR_OUTPUT
-	bHomed:BOOL;
-	bError: BOOL;
+    bHomed:BOOL;
+    bError: BOOL;
 	bWarning: BOOL;
-	nErrorId: UDINT;
+    nErrorId: UDINT;
 END_VAR
 VAR
 	bHomingInProgress: BOOL;
@@ -44,18 +44,18 @@ VAR
 	fbAbortHoming: MC_AbortHoming;
 	fbFinishHoming: MC_FinishHoming;
 	fbHomeReadNCVelocities: FB_HomeReadNCVelocities;
-	
+
 	trigger: TRIGGER_REF;
 	touchProbe: MC_TouchProbe;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF bReset THEN	
-	bError:=FALSE;
+    bError:=FALSE;
 	bWarning:=FALSE;
 	bReadNCVelocities:=FALSE;
 	bHomingInProgress:=FALSE;
 	fbAbortHoming.Execute:=FALSE;
-	nErrorId:=0;
+    nErrorId:=0;
 	nHomingState:=0;
 END_IF
 
@@ -244,7 +244,7 @@ CASE nHomeProcLocal OF
 		END_CASE
 	21,22: //Home to index pulse of an encoder in the negative(21) or positive(22) direction
 		CASE nHomingState OF
-		  0:
+          0:
 		  	fbStepReferencePulse.Execute:=FALSE;
 			fbStepReferencePulse.SetPosition:=fHomePosition;
 			fbStepReferencePulse.Velocity:=fbHomeReadNCVelocities.fVelocityFromCam;
@@ -434,7 +434,7 @@ IF fbStepLimitSwitch.CommandAborted OR fbStepLimitSwitchDetection.CommandAborted
 	bHomingInProgress:=FALSE;
 	bWarning:=TRUE;
 END_IF
-	
+
 bHomed:=Axis.Status.Homed;]]></ST>
     </Implementation>
     <LineIds Name="FB_Homing">
