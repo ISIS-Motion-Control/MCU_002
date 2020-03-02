@@ -14,7 +14,7 @@ VAR_INPUT
     fHomePosition: LREAL;
 END_VAR
 VAR_IN_OUT
-    Axis: AXIS_REF;	
+    Axis: AXIS_REF;
 END_VAR
 VAR_OUTPUT
     bHomed:BOOL;

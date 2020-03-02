@@ -182,7 +182,7 @@ CASE stAxisStruct.control.eCommand OF
 
         IF fbGearOut.Done THEN
             //Clear slave ratio from master axis slave array
-            GVL.axes[stMasterAxis.index].slaveAxisRatio[GVL.iAxis] := nNO_GEARING; 
+            GVL.axes[stMasterAxis.index].slaveAxisRatio[GVL.iAxis] := nNO_GEARING;
         END_IF
 
     MotionFunctions.Home:
