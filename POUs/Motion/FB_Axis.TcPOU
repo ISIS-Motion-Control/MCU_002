@@ -161,6 +161,7 @@ CASE stAxisStruct.control.eCommand OF
         fbMoveModulo.Acceleration := stAxisStruct.config.fAcceleration;
         fbMoveModulo.Deceleration := stAxisStruct.config.fDeceleration;
 
+
     MotionFunctions.GearIn:
         fbGearIn.Execute := stAxisStruct.control.bExecute;
         fbGearIn.RatioNumerator := stMasterAxis.Ratio;
@@ -293,7 +294,6 @@ END_IF
 stAxisStruct.control.bExecute := FALSE;]]></ST>
     </Implementation>
     <LineIds Name="FB_Axis">
-<<<<<<< Updated upstream
       <LineId Id="3042" Count="5" />
       <LineId Id="3258" Count="0" />
       <LineId Id="3048" Count="1" />
@@ -357,132 +357,6 @@ stAxisStruct.control.bExecute := FALSE;]]></ST>
       <LineId Id="3240" Count="1" />
       <LineId Id="3243" Count="14" />
       <LineId Id="203" Count="0" />
-=======
-      <LineId Id="2448" Count="0" />
-      <LineId Id="2659" Count="0" />
-      <LineId Id="2185" Count="0" />
-      <LineId Id="2203" Count="0" />
-      <LineId Id="2189" Count="0" />
-      <LineId Id="2377" Count="2" />
-      <LineId Id="2190" Count="0" />
-      <LineId Id="2380" Count="0" />
-      <LineId Id="2193" Count="0" />
-      <LineId Id="2381" Count="0" />
-      <LineId Id="2194" Count="1" />
-      <LineId Id="2383" Count="0" />
-      <LineId Id="2197" Count="0" />
-      <LineId Id="2384" Count="0" />
-      <LineId Id="2198" Count="0" />
-      <LineId Id="2385" Count="0" />
-      <LineId Id="2199" Count="0" />
-      <LineId Id="2437" Count="0" />
-      <LineId Id="2200" Count="0" />
-      <LineId Id="2438" Count="0" />
-      <LineId Id="2573" Count="0" />
-      <LineId Id="2493" Count="0" />
-      <LineId Id="2201" Count="0" />
-      <LineId Id="2446" Count="0" />
-      <LineId Id="1627" Count="1" />
-      <LineId Id="2515" Count="0" />
-      <LineId Id="2595" Count="0" />
-      <LineId Id="2591" Count="0" />
-      <LineId Id="2586" Count="2" />
-      <LineId Id="2585" Count="0" />
-      <LineId Id="2594" Count="0" />
-      <LineId Id="2516" Count="0" />
-      <LineId Id="1629" Count="0" />
-      <LineId Id="1632" Count="3" />
-      <LineId Id="1637" Count="0" />
-      <LineId Id="1642" Count="0" />
-      <LineId Id="1921" Count="0" />
-      <LineId Id="1925" Count="1" />
-      <LineId Id="2837" Count="0" />
-      <LineId Id="2835" Count="1" />
-      <LineId Id="2205" Count="0" />
-      <LineId Id="2719" Count="0" />
-      <LineId Id="2207" Count="0" />
-      <LineId Id="2209" Count="0" />
-      <LineId Id="2838" Count="0" />
-      <LineId Id="2841" Count="1" />
-      <LineId Id="2762" Count="0" />
-      <LineId Id="2839" Count="0" />
-      <LineId Id="1657" Count="0" />
-      <LineId Id="2366" Count="0" />
-      <LineId Id="2220" Count="0" />
-      <LineId Id="2222" Count="3" />
-      <LineId Id="2238" Count="0" />
-      <LineId Id="2236" Count="0" />
-      <LineId Id="2239" Count="0" />
-      <LineId Id="2241" Count="1" />
-      <LineId Id="2442" Count="0" />
-      <LineId Id="2244" Count="0" />
-      <LineId Id="2254" Count="0" />
-      <LineId Id="2219" Count="0" />
-      <LineId Id="2258" Count="0" />
-      <LineId Id="2443" Count="0" />
-      <LineId Id="2260" Count="0" />
-      <LineId Id="2262" Count="2" />
-      <LineId Id="2274" Count="0" />
-      <LineId Id="2273" Count="0" />
-      <LineId Id="2276" Count="3" />
-      <LineId Id="2281" Count="0" />
-      <LineId Id="2290" Count="1" />
-      <LineId Id="2294" Count="4" />
-      <LineId Id="2310" Count="0" />
-      <LineId Id="2343" Count="0" />
-      <LineId Id="2504" Count="0" />
-      <LineId Id="2575" Count="0" />
-      <LineId Id="2497" Count="0" />
-      <LineId Id="2506" Count="0" />
-      <LineId Id="2570" Count="1" />
-      <LineId Id="2574" Count="0" />
-      <LineId Id="2572" Count="0" />
-      <LineId Id="2569" Count="0" />
-      <LineId Id="2577" Count="0" />
-      <LineId Id="2583" Count="0" />
-      <LineId Id="2576" Count="0" />
-      <LineId Id="2361" Count="1" />
-      <LineId Id="2498" Count="0" />
-      <LineId Id="2582" Count="0" />
-      <LineId Id="2511" Count="0" />
-      <LineId Id="2584" Count="0" />
-      <LineId Id="2513" Count="0" />
-      <LineId Id="2344" Count="0" />
-      <LineId Id="2311" Count="0" />
-      <LineId Id="2329" Count="1" />
-      <LineId Id="2888" Count="0" />
-      <LineId Id="2331" Count="5" />
-      <LineId Id="2934" Count="0" />
-      <LineId Id="2992" Count="3" />
-      <LineId Id="2339" Count="0" />
-      <LineId Id="2309" Count="0" />
-      <LineId Id="2216" Count="0" />
-      <LineId Id="1733" Count="0" />
-      <LineId Id="1936" Count="1" />
-      <LineId Id="2770" Count="0" />
-      <LineId Id="2769" Count="0" />
-      <LineId Id="2772" Count="0" />
-      <LineId Id="2777" Count="2" />
-      <LineId Id="2771" Count="0" />
-      <LineId Id="1941" Count="1" />
-      <LineId Id="2651" Count="2" />
-      <LineId Id="1945" Count="30" />
-      <LineId Id="1979" Count="3" />
-      <LineId Id="2501" Count="0" />
-      <LineId Id="1992" Count="0" />
-      <LineId Id="2502" Count="0" />
-      <LineId Id="1993" Count="1" />
-      <LineId Id="2980" Count="1" />
-      <LineId Id="2989" Count="2" />
-      <LineId Id="2987" Count="1" />
-      <LineId Id="2982" Count="0" />
-      <LineId Id="2984" Count="2" />
-      <LineId Id="2983" Count="0" />
-      <LineId Id="1995" Count="6" />
-      <LineId Id="2272" Count="0" />
-      <LineId Id="1934" Count="0" />
-      <LineId Id="202" Count="1" />
->>>>>>> Stashed changes
     </LineIds>
   </POU>
 </TcPlcObject>
