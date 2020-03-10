@@ -246,8 +246,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PlaceholderResolution Include="Tc2_MC2">
-      <Resolution>Tc2_MC2, 3.3.28.0 (Beckhoff Automation GmbH)</Resolution>
+    <PlaceholderResolution Include="TcUnit">
+      <Resolution>TcUnit, * (www.tcunit.org)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>

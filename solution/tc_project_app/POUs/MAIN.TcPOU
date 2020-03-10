@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
   <POU Name="MAIN" Id="{33eb6f49-7781-4211-a70b-87ada6d80cb7}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -85,7 +85,7 @@ END_IF]]></ST>
     <Action Name="PROG" Id="{5d03ebbb-2a47-4890-ad6d-e82daf72dc51}">
       <Implementation>
         <ST><![CDATA[//
-(* Program any sequence, safety or feature (if necessary) application specific in thsi section*)
+(* Program any sequence, safety or feature (if necessary) application specific in this section*)
 //]]></ST>
       </Implementation>
     </Action>
