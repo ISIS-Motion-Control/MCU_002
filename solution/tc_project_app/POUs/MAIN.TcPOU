@@ -12,13 +12,13 @@ VAR
 (******Outputs: Power for Limit switches and Home Sensors (every 4th output)********)
 
     bOutput1 AT %Q*: BOOL:= TRUE;
-    //bOutput2 AT %Q*: BOOL:= TRUE;
-    //bOutput3 AT %Q*: BOOL:= TRUE;
-    //bOutput4 AT %Q*: BOOL:= TRUE;
-    //bOutput5 AT %Q*: BOOL:= TRUE;
-    //bOutput6 AT %Q*: BOOL:= TRUE;
-    //bOutput7 AT %Q*: BOOL:= TRUE;
-    //bOutput8 AT %Q*: BOOL:= TRUE;
+    bOutput2 AT %Q*: BOOL:= TRUE;
+    bOutput3 AT %Q*: BOOL:= TRUE;
+    bOutput4 AT %Q*: BOOL:= TRUE;
+    bOutput5 AT %Q*: BOOL:= TRUE;
+    bOutput6 AT %Q*: BOOL:= TRUE;
+    bOutput7 AT %Q*: BOOL:= TRUE;
+    bOutput8 AT %Q*: BOOL:= TRUE;
     //bOutput9 AT %Q*: BOOL:= TRUE;
     //bOutput13 AT %Q*: BOOL:= TRUE;
     //bOutput17 AT %Q*: BOOL:= TRUE;
@@ -37,7 +37,10 @@ VAR
     fbReadEncRefSys        : ARRAY [1..gvl_app.axisNum] OF MC_ReadParameter;
     fbRestorePosition      : ARRAY [1..GVL_app.axisNum] OF MC_SetPosition;
     fbGetDeviceIdentification : FB_GetDeviceIdentification;
+	fbCalcGap1 : FB_CalculateGap;
 
+	StateMachine: INT;
+	
 END_VAR
 
 VAR PERSISTENT
@@ -73,6 +76,18 @@ ELSIF eGlobalSUpsState <> eSUPS_PowerOK THEN
 END_IF]]></ST>
       </Implementation>
     </Action>
+    <Method Name="enableAxis" Id="{caaa806d-b297-4b20-b923-b6e7fafefc93}">
+      <Declaration><![CDATA[METHOD enableAxis : BOOL
+VAR_INPUT
+	iAxis : UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GVL.axes[iAxis].config.fOverride:=100;
+GVL.axes[iAxis].control.bEnable:= TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
     <Action Name="POSITION_RECOVERY" Id="{28e203b7-aea5-42d0-980d-12a6841f9d22}" FolderPath="POSITION_RECOVERY\">
       <Implementation>
         <ST><![CDATA[fbGetDeviceIdentification(bExecute:=TRUE);
@@ -86,7 +101,53 @@ END_IF]]></ST>
       <Implementation>
         <ST><![CDATA[//
 (* Program any sequence, safety or feature (if necessary) application specific in this section*)
-//]]></ST>
+// This progam is for the Muon Barn Doors application
+// It checks for a difference between 
+//
+
+CASE StateMachine OF
+
+//If the Gap 1 feedback value is different to the calculated Gap 1 value > Then do an update
+0 :
+
+//IF GVL.axes[8].status.fActPosition <> fbCalcGap1.GapSize THEN 10; ELSE 0;
+
+//Calc Gap 1 size to be commanded
+10 :
+
+fbCalcGap1.AngleBladeA := GVL.axes[1].status.fActPosition;
+fbCalcGap1.AngleBladeB := GVL.axes[2].status.fActPosition;
+fbCalcGap1();
+stateMachine := 11;
+
+//Update Gap 1 size
+11 :
+GVL.axes[8].config.fPosition := fbCalcGap1.GapSize;
+GVL.axes[8].control.eCommand := MotionFunctions.SetPosition;
+GVL.axes[8].control.bExecute := TRUE;
+StateMachine := 12;
+
+12 :
+IF GVL.axes[8].status.bDone = TRUE	THEN StateMachine := 10;
+END_IF
+
+//SetPos
+//20 :
+
+//GVL.axes[3].control.eCommand:=motionFunctions.MoveAbsolute;
+//GVL.axes[3].config.fPosition:= 10;
+//GVL.axes[3].control.bExecute:= TRUE;
+
+//Wait for move finished
+30:
+//IF GVL.axes[1].status.NOT.bBusy AND GVL.axes.[2].status.NOT.bBusy THEN 10;
+
+END_CASE
+
+FOR i:=1 TO GVL_APP.axisNum DO
+	enableAxis(iAxis:=i);
+END_FOR
+]]></ST>
       </Implementation>
     </Action>
     <Action Name="RESTORE_POSITIONS" Id="{0c7ee537-7bd9-4833-b428-c17cbb57e893}" FolderPath="POSITION_RECOVERY\">
@@ -232,6 +293,10 @@ END_FOR]]></ST>
       <LineId Id="2" Count="11" />
       <LineId Id="1" Count="0" />
     </LineIds>
+    <LineIds Name="MAIN.enableAxis">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="1" />
+    </LineIds>
     <LineIds Name="MAIN.POSITION_RECOVERY">
       <LineId Id="2" Count="3" />
       <LineId Id="1" Count="0" />
@@ -239,7 +304,47 @@ END_FOR]]></ST>
     <LineIds Name="MAIN.PROG">
       <LineId Id="2" Count="0" />
       <LineId Id="1" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="93" Count="0" />
       <LineId Id="3" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="5" Count="2" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="41" Count="2" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.RESTORE_POSITIONS">
       <LineId Id="99" Count="0" />
