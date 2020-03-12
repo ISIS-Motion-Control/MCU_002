@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="FB_CalculateAngle" Id="{389ded1b-c11c-4aa1-9e95-096a9e4789a7}" SpecialFunc="None">
+    <Declaration><![CDATA[//This function is used to calculate the blade angle of each in a pair of blades, based on a symetric gap size
+FUNCTION_BLOCK FB_CalculateAngle
+
+VAR_INPUT
+GapSize : LREAL;
+
+END_VAR
+
+VAR_OUTPUT
+AngleBladeA : LREAL;
+AngleBladeB : LREAL;
+
+END_VAR
+
+VAR
+
+BLADESIZE : LREAL:=62.94;	
+CLOSEDGAP : LREAL:=2.00;
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[AngleBladeA := RAD_TO_DEG(-ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));
+AngleBladeB := RAD_TO_DEG(ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));]]></ST>
+    </Implementation>
+    <LineIds Name="FB_CalculateAngle">
+      <LineId Id="59" Count="0" />
+      <LineId Id="61" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="FB_CalculateGap" Id="{eb587f1b-0364-468c-9da3-6eac971ef0df}" SpecialFunc="None">
+    <Declaration><![CDATA[//This function is used to calculate the gap size between two 'barn door' type blades
+FUNCTION_BLOCK FB_CalculateGap
+
+VAR_INPUT
+
+AngleBladeA : LREAL;
+AngleBladeB : LREAL;
+
+END_VAR
+
+VAR_OUTPUT
+
+GapSize : LREAL;
+
+END_VAR
+
+VAR
+
+BLADESIZE : LREAL:=62.94;	
+CLOSEDGAP : LREAL:=2.00;
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[GapSize := CLOSEDGAP + BLADESIZE*(2-(COS(DEG_TO_RAD(AngleBladeA)) + COS(DEG_TO_RAD(AngleBladeB))));]]></ST>
+    </Implementation>
+    <LineIds Name="FB_CalculateGap">
+      <LineId Id="14" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
