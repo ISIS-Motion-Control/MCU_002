@@ -7377,9 +7377,9 @@ External Setpoint Generation:
 		</Io>
 	</Project>
 	<Mappings>
-		<MappingInfo Identifier="{00000000-2041-0850-4020-500841000403}" Id="#x02030030"/>
+		<MappingInfo Identifier="{00000000-2041-0850-4020-500841000403}" Id="#x02030020"/>
 		<MappingInfo Identifier="{00000000-0020-0304-1000-040320000403}" Id="#x02030010"/>
-		<MappingInfo Identifier="{05000010-2041-0850-1000-040340205008}" Id="#x02030020" Watchdog="14000000040000000400000004000000"/>
+		<MappingInfo Identifier="{05000010-2041-0850-1000-040340205008}" Id="#x02030030" Watchdog="14000000040000000400000004000000"/>
 		<OwnerA Name="TIPC^tc_project_app^tc_project_app Instance">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 10 (EL2809)">
 				<Link VarA="PlcTask Outputs^MAIN.bOutput1" VarB="Channel 1^Output"/>
