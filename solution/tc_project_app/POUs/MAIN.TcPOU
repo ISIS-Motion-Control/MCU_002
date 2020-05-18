@@ -115,20 +115,21 @@ CASE StateMachine OF
 //Calc Gap 1 size to be commanded
 10 :
 
-fbCalcGap1.AngleBladeA := GVL.axes[1].status.fActPosition;
-fbCalcGap1.AngleBladeB := GVL.axes[2].status.fActPosition;
+fbCalcGap1.AngleBladeA := GVL.astAxes[1].stStatus.fActPosition;
+fbCalcGap1.AngleBladeB := GVL.astAxes[2].stStatus.fActPosition;
 fbCalcGap1();
 stateMachine := 11;
 
 //Update Gap 1 size
 11 :
-GVL.axes[8].config.fPosition := fbCalcGap1.GapSize;
-GVL.axes[8].control.eCommand := MotionFunctions.SetPosition;
-GVL.axes[8].control.bExecute := TRUE;
+GVL.astAxes[8].stConfig.fPosition := fbCalcGap1.GapSize;
+GVL.astAxes[8].stControl.eCommand := E_MotionFunctions.eWriteParameter;
+//WHAT PARAMETER AM I SETTING AND HOW DO I DO THIS??????????????????????????
+GVL.astAxes[8].stControl.bExecute := TRUE;
 StateMachine := 12;
 
 12 :
-IF GVL.axes[8].status.bDone = TRUE	THEN StateMachine := 10;
+IF GVL.astAxes[8].stStatus.bDone = TRUE	THEN StateMachine := 10;
 END_IF
 
 //SetPos
@@ -145,7 +146,7 @@ END_IF
 END_CASE
 
 FOR i:=1 TO GVL_APP.axisNum DO
-	enableAxis(iAxis:=i);
+    enableAxis(iAxis:=i);
 END_FOR
 ]]></ST>
       </Implementation>
@@ -327,7 +328,8 @@ END_FOR]]></ST>
       <LineId Id="96" Count="0" />
       <LineId Id="84" Count="0" />
       <LineId Id="72" Count="0" />
-      <LineId Id="102" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="112" Count="0" />
       <LineId Id="104" Count="0" />
       <LineId Id="106" Count="0" />
       <LineId Id="105" Count="0" />
