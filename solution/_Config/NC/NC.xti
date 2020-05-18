@@ -1358,13 +1358,13 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225"/>
-				<Velo Maximum="200"/>
+				<Velo SlowManual="2" FastManual="10" Maximum="200"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
-					<SoftEndMinControl Enable="true" Range="-97"/>
-					<SoftEndMaxControl Enable="true" Range="18"/>
+					<SoftEndMinControl Range="-97"/>
+					<SoftEndMaxControl Range="18"/>
 					<Inc RefSoftSyncMask="#x0000ffff"/>
 				</EncPara>
 				<Vars VarGrpType="1">
@@ -1522,13 +1522,12 @@ External Setpoint Generation:
 			<Name>Blade 1B</Name>
 			<AxisPara>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225"/>
-				<Velo Maximum="200"/>
+				<Velo SlowManual="2" FastManual="10" Maximum="200"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
 					<Inc RefSoftSyncMask="#x0000ffff"/>
-					<ParameterChanged>8</ParameterChanged>
 				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
