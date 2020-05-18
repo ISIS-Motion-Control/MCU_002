@@ -3,11 +3,10 @@
   <POU Name="MAIN" Id="{33eb6f49-7781-4211-a70b-87ada6d80cb7}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
-    sVersion: STRING:='1.0.0';
-    i : UINT; //index variable for AXES()
-    aFbAxes: ARRAY [1..gvl_app.axisNum] OF FB_Axis;
+    sVersion: STRING := '1.0.0';
+    afbAxes: ARRAY [1..GVL_APP.nAXIS_NUM] OF FB_Axis;
+    hmiAxisSelection: INT := 1; //Not possible to use local hmi variables for array indexes
 
-    hmiAxisSelection    :   INT:=1;     //Not possible to use local hmi variables for array indexes
 
 (******Outputs: Power for Limit switches and Home Sensors (every 4th output)********)
 
@@ -26,21 +25,26 @@ VAR
     //bOutput24 AT %Q*: BOOL:= TRUE;
     //bOutput28 AT %Q*: BOOL:= TRUE;
 
-(******Startup, Shutdown and UPS********)
-    fbUPS                  : FB_S_UPS_CX51x0;
-    eUpsMode               : E_S_UPS_Mode   := eSUPS_WrPersistData_Shutdown;
-    eStartUp: (ColdStart, ReadAxisFeedbackType, CheckReadDone, ExecuteRestore, CheckRestore, FinishRestore);
-    bPositionRestoreDone   : BOOL := FALSE;
-    bRestoreExecute        : BOOL := FALSE;
-    bExecuteReadEncRefSys  : BOOL := FALSE;
-    iRetry                 : INT;
-    fbReadEncRefSys        : ARRAY [1..gvl_app.axisNum] OF MC_ReadParameter;
-    fbRestorePosition      : ARRAY [1..GVL_app.axisNum] OF MC_SetPosition;
-    fbGetDeviceIdentification : FB_GetDeviceIdentification;
-	fbCalcGap1 : FB_CalculateGap;
+//Startup, Shutdown and UPS
+    fbUPS: FB_S_UPS_CX51x0;
+    eUpsMode: E_S_UPS_Mode := eSUPS_WrPersistData_Shutdown;
+    eStartUp: (eColdStart, eReadAxisFeedbackType, eCheckReadDone, eExecuteRestore, eCheckRestore, eFinishRestore);
+    bPositionRestoreDone: BOOL := FALSE;
+    bRestoreExecute: BOOL := FALSE;
+    bExecuteReadEncRefSys: BOOL := FALSE;
+    nRetry: INT;
+    iAxes : UINT; //index for for loops in Position recovery actions
+    afbReadEncRefSys: ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_ReadParameter;
+    afbRestorePosition: ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_SetPosition;
+    fbGetDeviceIdentification: FB_GetDeviceIdentification;
+    fbCalcGap1 : FB_CalculateGap;
 
-	StateMachine: INT;
-	
+    
+    //FB Variables for Muon Gates
+    StateMachine: INT;
+    i : UINT;
+    fPositionToSet : LREAL;
+    afbSetPosition : ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_SetPosition;
 END_VAR
 
 VAR PERSISTENT
@@ -54,24 +58,24 @@ AXES();]]></ST>
     <Folder Name="POSITION_RECOVERY" Id="{3561f6ef-e145-4ed3-9839-f17334bd2d97}" />
     <Action Name="AXES" Id="{7eb32732-9b53-4934-8cd9-20ba971dd8ff}">
       <Implementation>
-        <ST><![CDATA[FOR GVL.iAxis:=1 TO gvl_app.axisNum DO
-    aFbAxes[GVL.iAxis](stAxisStruct:=gvl.axes[GVL.iAxis]);
+        <ST><![CDATA[FOR GVL.iAxis:=1 TO GVL_APP.nAXIS_NUM DO
+    aFbAxes[GVL.iAxis](stAxisStruct:=gvl.astAxes[GVL.iAxis]);
 END_FOR]]></ST>
       </Implementation>
     </Action>
     <Action Name="CHECK_UPS" Id="{f0f28f50-53b8-4f73-b0f5-6d7ce4c1636f}" FolderPath="POSITION_RECOVERY\">
       <Implementation>
-        <ST><![CDATA[fbUPS(eUpsMode := eUpsMode); (* call UPS-FB instance in first lines of the fastest PLC Task *)
+        <ST><![CDATA[fbUPS(eUpsMode := eUpsMode);
 
 IF eGlobalSUpsState = eSUPS_PowerFailure THEN
-    (* first cycle of powerfailure *)
-    (* execute code that should only be done once with each powerfailure, i.e. increase powerfailure counter *)
-    bRestoreOnStartup:=TRUE;
+    //first cycle of powerfailure
+    //execute code that should only be done once with each powerfailure, i.e. increase powerfailure counter
+    bRestoreOnStartup := TRUE;
     STORE_PERSISTENT();
     RETURN;
 ELSIF eGlobalSUpsState <> eSUPS_PowerOK THEN
-    (* next cycles of powerfailure *)
-    (* skip regular code execution for the remaining cycles of the powerfailure/writing of persistent data/quick shutdown  ... *)
+    //next cycles of powerfailure
+    //skip regular code execution for the remaining cycles of the powerfailure/writing of persistent data/quick shutdown...
     RETURN;
 END_IF]]></ST>
       </Implementation>
@@ -79,18 +83,18 @@ END_IF]]></ST>
     <Method Name="enableAxis" Id="{caaa806d-b297-4b20-b923-b6e7fafefc93}">
       <Declaration><![CDATA[METHOD enableAxis : BOOL
 VAR_INPUT
-	iAxis : UINT;
+    iAxis : UINT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GVL.axes[iAxis].config.fOverride:=100;
-GVL.axes[iAxis].control.bEnable:= TRUE;
+        <ST><![CDATA[GVL.astAxes[iAxis].stConfig.fOverride:=100;
+GVL.astAxes[iAxis].stControl.bEnable:= TRUE;
 ]]></ST>
       </Implementation>
     </Method>
     <Action Name="POSITION_RECOVERY" Id="{28e203b7-aea5-42d0-980d-12a6841f9d22}" FolderPath="POSITION_RECOVERY\">
       <Implementation>
-        <ST><![CDATA[fbGetDeviceIdentification(bExecute:=TRUE);
+        <ST><![CDATA[fbGetDeviceIdentification(bExecute := TRUE);
 IF (fbGetDeviceIdentification.stDevIdent.strHardwareSerialNo <> '0') THEN
     CHECK_UPS();
     RESTORE_POSITIONS();
@@ -123,7 +127,8 @@ stateMachine := 11;
 //Update Gap 1 size
 11 :
 GVL.astAxes[8].stConfig.fPosition := fbCalcGap1.GapSize;
-GVL.astAxes[8].stControl.eCommand := E_MotionFunctions.eWriteParameter;
+//GVL.astAxes[8].stControl.eCommand := E_MotionFunctions.eWriteParameter;
+
 //WHAT PARAMETER AM I SETTING AND HOW DO I DO THIS??????????????????????????
 GVL.astAxes[8].stControl.bExecute := TRUE;
 StateMachine := 12;
@@ -145,7 +150,7 @@ END_IF
 
 END_CASE
 
-FOR i:=1 TO GVL_APP.axisNum DO
+FOR i:=1 TO GVL_APP.nAXIS_NUM DO
     enableAxis(iAxis:=i);
 END_FOR
 ]]></ST>
@@ -153,130 +158,125 @@ END_FOR
     </Action>
     <Action Name="RESTORE_POSITIONS" Id="{0c7ee537-7bd9-4833-b428-c17cbb57e893}" FolderPath="POSITION_RECOVERY\">
       <Implementation>
-        <ST><![CDATA[///#########################################################
-// This ACT will restore the position of an incremental axis on startup with the act position it read before losing power.
-// It checks the type of axis, 0=incremental, and that the axis was stationary at shut down.
-// Because 0 equates to incremental we also need to check that the data is valid, otherwise by default it would restore all axes.
-// By default an axis will not restore the position unless it is set to opt-in, i.e. gvl.axes[i].config.eRestorePosition is non-zero.
-// This needs to be initialised somewhere in TwinCAT code otherwise it will not be available at start up.
-// A restore will only be performed on a loss of power, this code shouldn't make any changes on a reset cold, a rest origin or a download.
-// There is a enum to allow for different types of restore modes, currently only one is implemented.
-// 0 'DontRestore'
-// 1 'RestoreWithoutHome' -restores the position using a set position fb and does not set the home bit in the axis struct.
-// Note from Beckhoff: "A maximum of 1 MB persistent data can be reliably saved over the entire service life."
-///#########################################################
+        <ST><![CDATA[//This ACT will restore the position of an incremental axis on startup with the act position it read before losing power.
+//It checks the type of axis, 0=incremental, and that the axis was stationary at shut down.
+//Because 0 equates to incremental we also need to check that the data is valid, otherwise by default it would restore all axes.
+//By default an axis will not restore the position unless it is set to opt-in, i.e. GVL.aAxes[iAxes].stConfig.eRestorePosition is non-zero.
+//This needs to be initialised somewhere in TwinCAT code otherwise it will not be available at start up.
+//A restore will only be performed on a loss of power, this code shouldn't make any changes on a reset cold, a rest origin or a download.
+//There is a enum to allow for different types of restore modes, currently only one is implemented.
+//0 'DontRestore'
+//1 'RestoreWithoutHome' -restores the position using a set position fb and does not set the home bit in the axis struct.
+//Note from Beckhoff: "A maximum of 1 MB persistent data can be reliably saved over the entire service life."
 
 IF bRestoreOnStartup AND eGlobalSUpsState = eSUPS_PowerOK THEN
-    bRestoreOnStartup:=FALSE;
-    bRestoreExecute:=TRUE;
+    bRestoreOnStartup := FALSE;
+    bRestoreExecute := TRUE;
 END_IF
 
-// Upon startup bPositionRestoreDone will be set to FALSE, after successfully completing the following code it will be set TRUE
-// and should stay TRUE for the rest of the time the PLC is operational, thus this routine should only be completed once.
+//Upon startup bPositionRestoreDone will be set to FALSE, after successfully completing the following code it will be set TRUE
+//and should stay TRUE for the rest of the time the PLC is operational, thus this routine should only be completed once.
 IF bRestoreExecute AND NOT bPositionRestoreDone THEN
-
-    // Cycle through function blocks that read the encoder reference system i.e. whether axis is incremental or absolute
-    // Result stored in Value, 0=Inc 1=Abs, execute set during the case statement
-    FOR i:=1 TO gvl_app.axisNum DO
-        fbReadEncRefSys[i](
-          Axis:= gvl.axes[i].Axis,
-          Enable:= bExecuteReadEncRefSys,
-          ParameterNumber:= MC_AxisParameter.AxisEncoderReferenceSystem,
-          Value=>,
-          ReadMode:= E_READMODE.READMODE_ONCE);
+    //Cycle through function blocks that read the encoder reference system i.e. whether axis is incremental or absolute
+    //Result stored in Value, 0=Inc 1=Abs, execute set during the case statement
+    FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+        afbReadEncRefSys[iAxes](
+          Axis := GVL.astAxes[iAxes].Axis,
+          Enable := bExecuteReadEncRefSys,
+          ParameterNumber := MC_AxisParameter.AxisEncoderReferenceSystem,
+          ReadMode := E_READMODE.READMODE_ONCE);
     END_FOR
 
-    // Cycle through set position function blocks for each axis
-    FOR i:=1 TO gvl_app.axisNum DO
-        fbRestorePosition[i](
-         Axis:= gvl.axes[i].Axis,
-         Execute:= ,
-         Position:= axesPersistent[i].iPositionAtShutdown);
+    //Cycle through set position function blocks for each axis
+    FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+        afbRestorePosition[iAxes](
+         Axis := GVL.astAxes[iAxes].Axis,
+         Position := astAxesPersistent[iAxes].fPositionAtShutdown);
     END_FOR
 
     CASE eStartUp OF
-        ColdStart:
-        // First cycle of the PLC, do nothing just give one cycle for variables to initialise
+        eColdStart:
+        //First cycle of the PLC, do nothing just give one cycle for variables to initialise
             IF NOT bPositionRestoreDone THEN
-                eStartUp:= ReadAxisFeedbackType;
-                iRetry:=0;
+                eStartUp := eReadAxisFeedbackType;
+                nRetry := 0;
             END_IF
 
-        ReadAxisFeedbackType:
-        // Exectute the function blocks to read the encoder reference system (0=inc OR 1=ABS)
-            bExecuteReadEncRefSys:=TRUE;
-            eStartUp:=CheckReadDone;
+        eReadAxisFeedbackType:
+        //Exectute the function blocks to read the encoder reference system (0=inc OR 1=ABS)
+            bExecuteReadEncRefSys := TRUE;
+            eStartUp := eCheckReadDone;
 
-        CheckReadDone:
-        // Check the encoder reference system has been read for all axis -> if busy then continue with PLC cycle and check again next time.
-        // If fbReadEncRefSys not started then go back a step.
-        // If any axes result in an error the code will get stuck here, this happens if gvl_app.axisNum is not set correctly
-            FOR i:=1 TO gvl_app.axisNum DO
-                IF fbReadEncRefSys[i].Valid = FALSE THEN
-                    IF fbReadEncRefSys[i].Busy = TRUE THEN
-                        // Exit MAIN.STARTUP Action and wait till next cycle, needs to cycle through whole program in order for data to update
+        eCheckReadDone:
+        //Check the encoder reference system has been read for all axis -> if busy then continue with PLC cycle and check again next time.
+        //If afbReadEncRefSys not started then go back a step.
+        //If any axes result in an error the code will get stuck here, this happens if GVL_APP.nAXIS_NUM is not set correctly
+            FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+                IF afbReadEncRefSys[iAxes].Valid = FALSE THEN
+                    IF afbReadEncRefSys[iAxes].Busy = TRUE THEN
+                        //Exit MAIN.STARTUP Action and wait till next cycle, needs to cycle through whole program in order for data to update
                         RETURN;
                     ELSE
-                        // Sometimes the code gets here and the fbReadEncRefSys[i] misses the rising edge. If  the code gets here it means
-                        // .valid=FALSE and .busy=FALSE which indicateds the FB probably hasn't started and thus needs to see a rising edge.
-                        // Set execute to low, Exit MAIN.STARTUP and go back a step in the CASE statement.
-                        bExecuteReadEncRefSys:=FALSE;
-                        eStartUp:=ReadAxisFeedbackType;
-                        iRetry:=iRetry+1; // counter used for troubleshooting to see how many cycles it takes before fbReadEncRefSys function blocks are read correctly
+                        //Sometimes the code gets here and the afbReadEncRefSys[iAxes] misses the rising edge. If  the code gets here it means
+                        //valid=FALSE and .busy=FALSE which indicateds the FB probably hasn't started and thus needs to see a rising edge.
+                        //Set execute to low, Exit MAIN.STARTUP and go back a step in the CASE statement.
+                        bExecuteReadEncRefSys := FALSE;
+                        eStartUp := eReadAxisFeedbackType;
+                        nRetry := nRetry + 1; //counter used for troubleshooting to see how many cycles it takes before afbReadEncRefSys function blocks are read correctly
                         RETURN;
                     END_IF
                 END_IF
             END_FOR
-            // If the code gets here all axes either have .valid=TRUE for all axes
-            eStartUp:= ExecuteRestore;
+            //If the code gets here all axes either have .valid=TRUE for all axes
+            eStartUp := eExecuteRestore;
 
-        ExecuteRestore:
-        // Execute position restore by setting fbRestorePosition.execute = TRUE
-            FOR i:=1 TO gvl_app.axisNum DO
-                IF fbReadEncRefSys[i].Valid = TRUE AND fbReadEncRefSys[i].Value = 0 AND NOT(axesPersistent[i].bMovingAtShutdown) THEN
-                    IF GVL.axes[i].config.eRestorePosition = RestorePosition.RestoreWithoutHome THEN
-                        fbRestorePosition[i].Execute:=TRUE;
+        eExecuteRestore:
+        //Execute position restore by setting afbRestorePosition.execute = TRUE
+            FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+                IF afbReadEncRefSys[iAxes].Valid = TRUE AND afbReadEncRefSys[iAxes].Value = 0 AND NOT(astAxesPersistent[iAxes].bMovingAtShutdown) THEN
+                    IF GVL.astAxes[iAxes].stConfig.eRestorePosition = E_RestorePosition.eRestoreWithoutHome THEN
+                        afbRestorePosition[iAxes].Execute := TRUE;
                     END_IF
                 END_IF
             END_FOR
-            eStartUp:= CheckRestore;
+            eStartUp := eCheckRestore;
 
-        CheckRestore:
-        // Check the set position fbs are finished
-        // Nothing actually happens if the restore is not done, the code just returns from here each cycle and the
-        // bPositionRestoreDone will never get set to TRUE and will take up cycle time
-            FOR i:=1 TO gvl_app.axisNum DO
-                IF fbReadEncRefSys[i].Valid = TRUE AND fbReadEncRefSys[i].Value = 0 AND NOT(axesPersistent[i].bMovingAtShutdown) THEN
-                    IF GVL.axes[i].config.eRestorePosition = RestorePosition.RestoreWithoutHome THEN
-                        IF NOT fbRestorePosition[i].Done THEN
+        eCheckRestore:
+        //Check the set position fbs are finished
+        //Nothing actually happens if the restore is not done, the code just returns from here each cycle and the
+        //bPositionRestoreDone will never get set to TRUE and will take up cycle time
+            FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+                IF afbReadEncRefSys[iAxes].Valid = TRUE AND afbReadEncRefSys[iAxes].Value = 0 AND NOT(astAxesPersistent[iAxes].bMovingAtShutdown) THEN
+                    IF GVL.astAxes[iAxes].stConfig.eRestorePosition = E_RestorePosition.eRestoreWithoutHome THEN
+                        IF NOT afbRestorePosition[iAxes].Done THEN
                             RETURN;
                         END_IF
                     END_IF
                 END_IF
             END_FOR
-            eStartUp:= FinishRestore;
+            eStartUp := eFinishRestore;
 
-        FinishRestore:
-        // Remove execute = TRUE for fbRestorePosition
-            FOR i:=1 TO gvl_app.axisNum DO
-                fbRestorePosition[i].Execute:=FALSE;
+        eFinishRestore:
+        //Remove execute = TRUE for afbRestorePosition
+            FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+                afbRestorePosition[iAxes].Execute := FALSE;
             END_FOR
-            bPositionRestoreDone:=TRUE;
-            bRestoreExecute:=FALSE;
+            bPositionRestoreDone := TRUE;
+            bRestoreExecute := FALSE;
     END_CASE
 END_IF]]></ST>
       </Implementation>
     </Action>
     <Action Name="STORE_PERSISTENT" Id="{cb5c9254-2e5f-47b1-9baa-10e728a961b0}" FolderPath="POSITION_RECOVERY\">
       <Implementation>
-        <ST><![CDATA[FOR i:=1 TO gvl_app.axisNum DO
-    axesPersistent[i].iPositionAtShutdown:=gvl.axes[i].Axis.NcToPlc.ActPos;
-    IF gvl.axes[i].Axis.NcToPlc.ActVelo <> 0 THEN
-        axesPersistent[i].bMovingAtShutdown:=TRUE;
+        <ST><![CDATA[FOR iAxes := 1 TO GVL_APP.nAXIS_NUM DO
+    astAxesPersistent[iAxes].fPositionAtShutdown := GVL.astAxes[iAxes].Axis.NcToPlc.ActPos;
+    IF GVL.astAxes[iAxes].Axis.NcToPlc.ActVelo <> 0 THEN
+        astAxesPersistent[iAxes].bMovingAtShutdown := TRUE;
     ELSE
-        axesPersistent[i].bMovingAtShutdown:=FALSE;
+        astAxesPersistent[iAxes].bMovingAtShutdown := FALSE;
     END_IF
-    axesPersistent[i].bMovingAtShutdown:=axesPersistent[i].bMovingAtShutdown OR gvl.axes[i].Axis.Status.Moving;
+    astAxesPersistent[iAxes].bMovingAtShutdown := astAxesPersistent[iAxes].bMovingAtShutdown OR GVL.astAxes[iAxes].Axis.Status.Moving;
 END_FOR]]></ST>
       </Implementation>
     </Action>
@@ -291,7 +291,7 @@ END_FOR]]></ST>
       <LineId Id="10" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.CHECK_UPS">
-      <LineId Id="2" Count="11" />
+      <LineId Id="14" Count="11" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.enableAxis">
@@ -299,7 +299,7 @@ END_FOR]]></ST>
       <LineId Id="7" Count="1" />
     </LineIds>
     <LineIds Name="MAIN.POSITION_RECOVERY">
-      <LineId Id="2" Count="3" />
+      <LineId Id="6" Count="3" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.PROG">
@@ -328,6 +328,7 @@ END_FOR]]></ST>
       <LineId Id="96" Count="0" />
       <LineId Id="84" Count="0" />
       <LineId Id="72" Count="0" />
+      <LineId Id="114" Count="0" />
       <LineId Id="113" Count="0" />
       <LineId Id="112" Count="0" />
       <LineId Id="104" Count="0" />
@@ -349,87 +350,11 @@ END_FOR]]></ST>
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.RESTORE_POSITIONS">
-      <LineId Id="99" Count="0" />
-      <LineId Id="94" Count="0" />
-      <LineId Id="98" Count="0" />
-      <LineId Id="213" Count="0" />
-      <LineId Id="101" Count="0" />
-      <LineId Id="233" Count="1" />
-      <LineId Id="102" Count="0" />
-      <LineId Id="215" Count="0" />
-      <LineId Id="214" Count="0" />
-      <LineId Id="109" Count="0" />
-      <LineId Id="95" Count="0" />
-      <LineId Id="236" Count="2" />
-      <LineId Id="240" Count="0" />
-      <LineId Id="239" Count="0" />
-      <LineId Id="206" Count="0" />
-      <LineId Id="208" Count="1" />
-      <LineId Id="207" Count="0" />
-      <LineId Id="100" Count="0" />
-      <LineId Id="91" Count="1" />
-      <LineId Id="2" Count="7" />
-      <LineId Id="96" Count="0" />
-      <LineId Id="10" Count="6" />
-      <LineId Id="18" Count="2" />
-      <LineId Id="177" Count="0" />
-      <LineId Id="21" Count="3" />
-      <LineId Id="171" Count="0" />
-      <LineId Id="25" Count="0" />
-      <LineId Id="178" Count="0" />
-      <LineId Id="26" Count="1" />
-      <LineId Id="170" Count="0" />
-      <LineId Id="29" Count="0" />
-      <LineId Id="179" Count="0" />
-      <LineId Id="163" Count="0" />
-      <LineId Id="212" Count="0" />
-      <LineId Id="152" Count="0" />
-      <LineId Id="139" Count="0" />
-      <LineId Id="131" Count="0" />
-      <LineId Id="155" Count="0" />
-      <LineId Id="190" Count="0" />
-      <LineId Id="140" Count="0" />
-      <LineId Id="157" Count="0" />
-      <LineId Id="210" Count="1" />
-      <LineId Id="187" Count="0" />
-      <LineId Id="150" Count="1" />
-      <LineId Id="200" Count="0" />
-      <LineId Id="145" Count="0" />
-      <LineId Id="141" Count="0" />
-      <LineId Id="166" Count="0" />
-      <LineId Id="203" Count="0" />
-      <LineId Id="201" Count="0" />
-      <LineId Id="173" Count="0" />
-      <LineId Id="56" Count="0" />
-      <LineId Id="181" Count="0" />
-      <LineId Id="57" Count="1" />
-      <LineId Id="216" Count="0" />
-      <LineId Id="219" Count="1" />
-      <LineId Id="63" Count="2" />
-      <LineId Id="174" Count="0" />
-      <LineId Id="66" Count="0" />
-      <LineId Id="182" Count="0" />
-      <LineId Id="204" Count="1" />
-      <LineId Id="67" Count="1" />
-      <LineId Id="221" Count="0" />
-      <LineId Id="71" Count="2" />
-      <LineId Id="222" Count="0" />
-      <LineId Id="79" Count="2" />
-      <LineId Id="175" Count="0" />
-      <LineId Id="82" Count="0" />
-      <LineId Id="223" Count="0" />
-      <LineId Id="83" Count="3" />
-      <LineId Id="241" Count="0" />
-      <LineId Id="87" Count="0" />
+      <LineId Id="242" Count="105" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.STORE_PERSISTENT">
-      <LineId Id="10" Count="0" />
-      <LineId Id="3" Count="0" />
-      <LineId Id="5" Count="1" />
-      <LineId Id="8" Count="1" />
-      <LineId Id="7" Count="0" />
-      <LineId Id="4" Count="0" />
+      <LineId Id="11" Count="7" />
       <LineId Id="1" Count="0" />
     </LineIds>
   </POU>
