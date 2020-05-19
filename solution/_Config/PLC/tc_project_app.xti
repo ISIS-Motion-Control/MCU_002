@@ -1112,6 +1112,14 @@ External Setpoint Generation:
 					<Type>BOOL</Type>
 				</Var>
 				<Var>
+					<Name>MAIN.fCalculatedPosition</Name>
+					<Type>REAL</Type>
+				</Var>
+				<Var>
+					<Name>MAIN.fCalculatedInt</Name>
+					<Type>DINT</Type>
+				</Var>
+				<Var>
 					<Name>GVL.astAxes[1].Axis.PlcToNc</Name>
 					<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 				</Var>
@@ -1230,6 +1238,7 @@ External Setpoint Generation:
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Gap 1 (mm)">
 				<Link VarA="PlcTask Inputs^GVL.astAxes[8].Axis.NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^GVL.astAxes[8].Axis.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^MAIN.fCalculatedInt" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Gap 2 (mm)">
 				<Link VarA="PlcTask Inputs^GVL.astAxes[9].Axis.NcToPlc" VarB="Outputs^ToPlc"/>

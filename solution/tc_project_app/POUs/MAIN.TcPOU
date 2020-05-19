@@ -38,13 +38,15 @@ VAR
     afbRestorePosition: ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_SetPosition;
     fbGetDeviceIdentification: FB_GetDeviceIdentification;
     fbCalcGap1 : FB_CalculateGap;
+    fbCalcAngle : FB_CalculateAngle;
 
-    
     //FB Variables for Muon Gates
     StateMachine: INT;
     i : UINT;
     fPositionToSet : LREAL;
-    afbSetPosition : ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_SetPosition;
+    toggleExecute : BOOL;
+    fCalculatedPosition AT %Q*: REAL;
+    fCalculatedInt AT %Q* : DINT;
 END_VAR
 
 VAR PERSISTENT
@@ -103,56 +105,38 @@ END_IF]]></ST>
     </Action>
     <Action Name="PROG" Id="{5d03ebbb-2a47-4890-ad6d-e82daf72dc51}">
       <Implementation>
-        <ST><![CDATA[//
-(* Program any sequence, safety or feature (if necessary) application specific in this section*)
-// This progam is for the Muon Barn Doors application
-// It checks for a difference between 
-//
-
-CASE StateMachine OF
-
-//If the Gap 1 feedback value is different to the calculated Gap 1 value > Then do an update
-0 :
-
-//IF GVL.axes[8].status.fActPosition <> fbCalcGap1.GapSize THEN 10; ELSE 0;
-
-//Calc Gap 1 size to be commanded
-10 :
+        <ST><![CDATA[(*MUON BARN DOORS*)
+(*This application uses a set position functionblock to update
+the gap size value of a virtual axis based on two real world barn door jaw blades.
+The gap size is limited by the geometry of the jaws defined by the closed gap size and the blade size*)
 
 fbCalcGap1.AngleBladeA := GVL.astAxes[1].stStatus.fActPosition;
 fbCalcGap1.AngleBladeB := GVL.astAxes[2].stStatus.fActPosition;
 fbCalcGap1();
-stateMachine := 11;
-
-//Update Gap 1 size
-11 :
-GVL.astAxes[8].stConfig.fPosition := fbCalcGap1.GapSize;
-//GVL.astAxes[8].stControl.eCommand := E_MotionFunctions.eWriteParameter;
-
-//WHAT PARAMETER AM I SETTING AND HOW DO I DO THIS??????????????????????????
-GVL.astAxes[8].stControl.bExecute := TRUE;
-StateMachine := 12;
-
-12 :
-IF GVL.astAxes[8].stStatus.bDone = TRUE	THEN StateMachine := 10;
+fCalculatedPosition:= fbCalcGap1.GapSize;
+fCalculatedPosition:= fCalculatedPosition*10000;
+fCalculatedInt:=  REAL_TO_DINT(fCalculatedPosition);
+//Geometry check
+IF GVL.astAxes[8].stConfig.fPosition > (2*fbCalcGap1.BLADESIZE+fbCalcGap1.CLOSEDGAP) THEN
+    GVL.astAxes[8].stConfig.fPosition:= 2*fbCalcGap1.BLADESIZE+fbCalcGap1.CLOSEDGAP;
+END_IF
+IF GVL.astAxes[8].stConfig.fPosition < (fbCalcGap1.CLOSEDGAP) THEN
+    GVL.astAxes[8].stConfig.fPosition:= fbCalcGap1.CLOSEDGAP;
 END_IF
 
-//SetPos
-//20 :
+//Check for absolute position move of virtual axis and issue move to blades if move executed
+IF GVL.astAxes[8].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL.astAxes[8].stControl.bExecute THEN
+    fbCalcAngle(GapSize:=GVL.astAxes[8].stConfig.fPosition);
+    GVL.astAxes[1].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
+    GVL.astAxes[1].stConfig.fPosition := fbCalcAngle.AngleBladeA;
+    GVL.astAxes[1].stConfig.fVelocity:=1;
+    GVL.astAxes[1].stControl.bExecute:=TRUE;
+    GVL.astAxes[2].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
+    GVL.astAxes[2].stConfig.fPosition := fbCalcAngle.AngleBladeB;
+    GVL.astAxes[2].stConfig.fVelocity:=1;
+    GVL.astAxes[2].stControl.bExecute:=TRUE;
+END_IF
 
-//GVL.axes[3].control.eCommand:=motionFunctions.MoveAbsolute;
-//GVL.axes[3].config.fPosition:= 10;
-//GVL.axes[3].control.bExecute:= TRUE;
-
-//Wait for move finished
-30:
-//IF GVL.axes[1].status.NOT.bBusy AND GVL.axes.[2].status.NOT.bBusy THEN 10;
-
-END_CASE
-
-FOR i:=1 TO GVL_APP.nAXIS_NUM DO
-    enableAxis(iAxis:=i);
-END_FOR
 ]]></ST>
       </Implementation>
     </Action>
@@ -303,50 +287,24 @@ END_FOR]]></ST>
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.PROG">
-      <LineId Id="2" Count="0" />
-      <LineId Id="1" Count="0" />
-      <LineId Id="87" Count="0" />
-      <LineId Id="93" Count="0" />
       <LineId Id="3" Count="0" />
-      <LineId Id="13" Count="0" />
-      <LineId Id="12" Count="0" />
-      <LineId Id="69" Count="0" />
-      <LineId Id="28" Count="0" />
-      <LineId Id="23" Count="0" />
-      <LineId Id="89" Count="0" />
-      <LineId Id="88" Count="0" />
-      <LineId Id="38" Count="0" />
+      <LineId Id="136" Count="3" />
+      <LineId Id="119" Count="1" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="148" Count="1" />
+      <LineId Id="141" Count="6" />
       <LineId Id="31" Count="0" />
       <LineId Id="15" Count="0" />
       <LineId Id="80" Count="0" />
-      <LineId Id="37" Count="0" />
-      <LineId Id="81" Count="0" />
-      <LineId Id="83" Count="0" />
-      <LineId Id="100" Count="0" />
-      <LineId Id="95" Count="0" />
-      <LineId Id="94" Count="0" />
-      <LineId Id="96" Count="0" />
-      <LineId Id="84" Count="0" />
-      <LineId Id="72" Count="0" />
-      <LineId Id="114" Count="0" />
-      <LineId Id="113" Count="0" />
-      <LineId Id="112" Count="0" />
-      <LineId Id="104" Count="0" />
-      <LineId Id="106" Count="0" />
-      <LineId Id="105" Count="0" />
-      <LineId Id="107" Count="0" />
-      <LineId Id="109" Count="0" />
-      <LineId Id="101" Count="0" />
-      <LineId Id="35" Count="1" />
-      <LineId Id="98" Count="0" />
-      <LineId Id="5" Count="2" />
-      <LineId Id="50" Count="0" />
-      <LineId Id="41" Count="2" />
-      <LineId Id="47" Count="0" />
-      <LineId Id="20" Count="0" />
-      <LineId Id="9" Count="0" />
-      <LineId Id="8" Count="0" />
-      <LineId Id="10" Count="1" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="124" Count="1" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="130" Count="2" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="11" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.RESTORE_POSITIONS">
