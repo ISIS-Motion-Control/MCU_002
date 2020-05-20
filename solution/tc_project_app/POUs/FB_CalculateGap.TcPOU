@@ -8,8 +8,8 @@ VAR_INPUT
 
 AngleBladeA : LREAL;
 AngleBladeB : LREAL;
-BLADESIZE : LREAL:=62.94;	
-CLOSEDGAP : LREAL:=2.00;
+fBladeSize : LREAL:=62.94;
+fClosedGap : LREAL:=2.00;
 END_VAR
 
 VAR_OUTPUT
@@ -24,7 +24,7 @@ VAR
 
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[GapSize := CLOSEDGAP + BLADESIZE*(2-(COS(DEG_TO_RAD(AngleBladeA)) + COS(DEG_TO_RAD(AngleBladeB))));]]></ST>
+      <ST><![CDATA[GapSize := fClosedGap + fBladeSize*(2-(COS(DEG_TO_RAD(AngleBladeA)) + COS(DEG_TO_RAD(AngleBladeB))));]]></ST>
     </Implementation>
     <LineIds Name="FB_CalculateGap">
       <LineId Id="14" Count="0" />
