@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+  <Task Name="NC_Task_1_SAF" Id="{67996afc-d6b5-4153-9803-db28c45331ec}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>2000</CycleTime>
+    <Priority>4</Priority>
+    <PouCall>
+      <Name>gapUpdate</Name>
+    </PouCall>
+    <TaskFBGuid>{c750c9e0-6222-4496-918d-a2d6b290f709}</TaskFBGuid>
+    <Fb_init>{3071db2f-4a2d-4f13-b54c-af9fce7277bc}</Fb_init>
+    <Fb_exit>{5f0a4d58-833b-4f82-9bf0-e9976cd1493f}</Fb_exit>
+    <CycleUpdate>{c52d5246-c88d-4a39-8221-6c4855b695d4}</CycleUpdate>
+    <PostCycleUpdate>{f1871087-cd4f-472e-a9b2-21e2090f129c}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>
