@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+  <POU Name="gapUpdate" Id="{052ae45b-4e00-406b-8780-3da133e30d51}" SpecialFunc="None">
+    <Declaration><![CDATA[//{attribute 'TcCallAfterOutputUpdate' }
+PROGRAM gapUpdate
+VAR
+    fbCalcGap1 : FB_CalculateGap;
+    //FB Variables for Muon Gates
+    StateMachine: INT;
+    i : UINT;
+    fPositionToSet : LREAL;
+    toggleExecute : BOOL;
+    fCalculatedPosition AT %Q*: REAL;
+    fCalculatedInt AT %Q* : DINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbCalcGap1.AngleBladeA := GVL.astAxes[1].stStatus.fActPosition;
+fbCalcGap1.AngleBladeB := GVL.astAxes[2].stStatus.fActPosition;
+fbCalcGap1();
+fCalculatedPosition:= fbCalcGap1.GapSize;
+fCalculatedPosition:= fCalculatedPosition*10000;
+fCalculatedInt:=  REAL_TO_DINT(fCalculatedPosition);]]></ST>
+    </Implementation>
+    <LineIds Name="gapUpdate">
+      <LineId Id="17" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
