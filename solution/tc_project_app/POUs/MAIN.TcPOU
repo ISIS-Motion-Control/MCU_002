@@ -37,16 +37,10 @@ VAR
     afbReadEncRefSys: ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_ReadParameter;
     afbRestorePosition: ARRAY [1..GVL_APP.nAXIS_NUM] OF MC_SetPosition;
     fbGetDeviceIdentification: FB_GetDeviceIdentification;
-    fbCalcGap1 : FB_CalculateGap;
-    fbCalcAngle : FB_CalculateAngle;
-
-    //FB Variables for Muon Gates
-    StateMachine: INT;
-    i : UINT;
-    fPositionToSet : LREAL;
-    toggleExecute : BOOL;
-    fCalculatedPosition AT %Q*: REAL;
-    fCalculatedInt AT %Q* : DINT;
+      
+    fbBarnDoor1 :   FB_BarnDoors;
+    fbBarnDoor2 :   FB_BarnDoors;
+    fbBarnDoor3 :   FB_BarnDoors;
 END_VAR
 
 VAR PERSISTENT
@@ -55,7 +49,8 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[POSITION_RECOVERY();
 PROG();
-AXES();]]></ST>
+AXES();
+]]></ST>
     </Implementation>
     <Folder Name="POSITION_RECOVERY" Id="{3561f6ef-e145-4ed3-9839-f17334bd2d97}" />
     <Action Name="AXES" Id="{7eb32732-9b53-4934-8cd9-20ba971dd8ff}">
@@ -82,18 +77,6 @@ ELSIF eGlobalSUpsState <> eSUPS_PowerOK THEN
 END_IF]]></ST>
       </Implementation>
     </Action>
-    <Method Name="enableAxis" Id="{caaa806d-b297-4b20-b923-b6e7fafefc93}">
-      <Declaration><![CDATA[METHOD enableAxis : BOOL
-VAR_INPUT
-    iAxis : UINT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[GVL.astAxes[iAxis].stConfig.fOverride:=100;
-GVL.astAxes[iAxis].stControl.bEnable:= TRUE;
-]]></ST>
-      </Implementation>
-    </Method>
     <Action Name="POSITION_RECOVERY" Id="{28e203b7-aea5-42d0-980d-12a6841f9d22}" FolderPath="POSITION_RECOVERY\">
       <Implementation>
         <ST><![CDATA[fbGetDeviceIdentification(bExecute := TRUE);
@@ -110,34 +93,9 @@ END_IF]]></ST>
 the gap size value of a virtual axis based on two real world barn door jaw blades.
 The gap size is limited by the geometry of the jaws defined by the closed gap size and the blade size*)
 
-fbCalcGap1.AngleBladeA := GVL.astAxes[1].stStatus.fActPosition;
-fbCalcGap1.AngleBladeB := GVL.astAxes[2].stStatus.fActPosition;
-fbCalcGap1();
-fCalculatedPosition:= fbCalcGap1.GapSize;
-fCalculatedPosition:= fCalculatedPosition*10000;
-fCalculatedInt:=  REAL_TO_DINT(fCalculatedPosition);
-//Geometry check
-IF GVL.astAxes[8].stConfig.fPosition > (2*fbCalcGap1.BLADESIZE+fbCalcGap1.CLOSEDGAP) THEN
-    GVL.astAxes[8].stConfig.fPosition:= 2*fbCalcGap1.BLADESIZE+fbCalcGap1.CLOSEDGAP;
-END_IF
-IF GVL.astAxes[8].stConfig.fPosition < (fbCalcGap1.CLOSEDGAP) THEN
-    GVL.astAxes[8].stConfig.fPosition:= fbCalcGap1.CLOSEDGAP;
-END_IF
-
-//Check for absolute position move of virtual axis and issue move to blades if move executed
-IF GVL.astAxes[8].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL.astAxes[8].stControl.bExecute THEN
-    fbCalcAngle(GapSize:=GVL.astAxes[8].stConfig.fPosition);
-    GVL.astAxes[1].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
-    GVL.astAxes[1].stConfig.fPosition := fbCalcAngle.AngleBladeA;
-    GVL.astAxes[1].stConfig.fVelocity:=1;
-    GVL.astAxes[1].stControl.bExecute:=TRUE;
-    GVL.astAxes[2].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
-    GVL.astAxes[2].stConfig.fPosition := fbCalcAngle.AngleBladeB;
-    GVL.astAxes[2].stConfig.fVelocity:=1;
-    GVL.astAxes[2].stControl.bExecute:=TRUE;
-END_IF
-
-]]></ST>
+fbBarnDoor1(bladeA:=1,bladeB:=2,gap:=8,fClosedGap:=2,fBladeSize:=62.94);
+fbBarnDoor2(bladeA:=3,bladeB:=4,gap:=9,fClosedGap:=2,fBladeSize:=62.94);
+fbBarnDoor3(bladeA:=5,bladeB:=6,gap:=10,fClosedGap:=2,fBladeSize:=62.94);]]></ST>
       </Implementation>
     </Action>
     <Action Name="RESTORE_POSITIONS" Id="{0c7ee537-7bd9-4833-b428-c17cbb57e893}" FolderPath="POSITION_RECOVERY\">
@@ -268,6 +226,7 @@ END_FOR]]></ST>
       <LineId Id="505" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="81" Count="0" />
+      <LineId Id="567" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.AXES">
       <LineId Id="1" Count="0" />
@@ -278,34 +237,17 @@ END_FOR]]></ST>
       <LineId Id="14" Count="11" />
       <LineId Id="1" Count="0" />
     </LineIds>
-    <LineIds Name="MAIN.enableAxis">
-      <LineId Id="5" Count="0" />
-      <LineId Id="7" Count="1" />
-    </LineIds>
     <LineIds Name="MAIN.POSITION_RECOVERY">
       <LineId Id="6" Count="3" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.PROG">
       <LineId Id="3" Count="0" />
-      <LineId Id="136" Count="3" />
-      <LineId Id="119" Count="1" />
-      <LineId Id="118" Count="0" />
-      <LineId Id="140" Count="0" />
-      <LineId Id="148" Count="1" />
-      <LineId Id="141" Count="6" />
-      <LineId Id="31" Count="0" />
-      <LineId Id="15" Count="0" />
-      <LineId Id="80" Count="0" />
-      <LineId Id="121" Count="0" />
-      <LineId Id="124" Count="1" />
-      <LineId Id="128" Count="0" />
-      <LineId Id="126" Count="0" />
-      <LineId Id="130" Count="2" />
-      <LineId Id="129" Count="0" />
+      <LineId Id="136" Count="2" />
+      <LineId Id="149" Count="0" />
       <LineId Id="135" Count="0" />
-      <LineId Id="11" Count="0" />
       <LineId Id="4" Count="0" />
+      <LineId Id="154" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.RESTORE_POSITIONS">
       <LineId Id="242" Count="105" />

@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+  <POU Name="FB_BarnDoors" Id="{b6c2e4cf-4c7d-4459-a188-0564af6adf0d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_BarnDoors
+VAR_INPUT
+    bladeA  : UINT;
+    bladeB  : UINT;
+    gap     : UINT;
+    fClosedGap  : LREAL;
+    fBladeSize  : LREAL;
+    
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    iState: INT;
+    fPositionToSet : LREAL;
+    fCalculatedPosition : REAL;
+    fCalculatedInt AT %Q* : DINT;
+    fbCalcGap : FB_CalculateGap;
+    fbCalcAngle : FB_CalculateAngle;
+    
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Geometry check
+(*Position values outside the allowable range defined by the blade geometry cannot be reached but will result in errors during calculation*)
+//Check upper limit
+IF GVL.astAxes[gap].stConfig.fPosition > (2*fBladeSize+fClosedGap) THEN
+    GVL.astAxes[gap].stConfig.fPosition:= 2*fBladeSize+fClosedGap;
+END_IF
+//Check lower limit
+IF GVL.astAxes[gap].stConfig.fPosition < (fClosedGap) THEN
+    GVL.astAxes[gap].stConfig.fPosition:= fClosedGap;
+END_IF
+
+//Check switches and enables (wouldn't cause crash)
+IF GVL.astAxes[bladeA].stStatus.bFwEnabled AND GVL.astAxes[bladeB].stStatus.bFwEnabled THEN
+    GVL.astAxes[gap].stInputs.bLimitFwd:= TRUE;
+ELSE
+    GVL.astAxes[gap].stInputs.bLimitFwd:= FALSE;
+END_IF
+IF GVL.astAxes[bladeA].stStatus.bBwEnabled AND GVL.astAxes[bladeB].stStatus.bBwEnabled THEN
+    GVL.astAxes[gap].stInputs.bLimitBwd:= TRUE;
+ELSE
+    GVL.astAxes[gap].stInputs.bLimitBwd:= FALSE;
+END_IF
+IF GVL.astAxes[bladeA].stStatus.bEnabled AND GVL.astAxes[bladeB].stStatus.bEnabled THEN
+    GVL.astAxes[gap].stControl.bEnable:= TRUE;
+ELSE
+    GVL.astAxes[gap].stControl.bEnable:= FALSE;
+END_IF
+
+fbCalcAngle(GapSize:=GVL.astAxes[gap].stConfig.fPosition);
+
+CASE iState OF
+0://Wait for blade axes enabled
+    IF GVL.astAxes[bladeA].stStatus.bEnabled AND GVL.astAxes[bladeB].stStatus.bEnabled THEN
+        iState:=1;
+	END_IF
+
+1://Wait for all axes calibrated, if bladeA AND bladeB calibrated, can direct home gap to the correct value
+    IF (GVL.astAxes[bladeA].stStatus.bHomed AND GVL.astAxes[bladeB].stStatus.bHomed) THEN
+        fbCalcGap(AngleBladeA:=GVL.astAxes[bladeA].stStatus.fActPosition,AngleBladeB:=GVL.astAxes[bladeB].stStatus.fActPosition,fBladeSize:= fBladeSize, fClosedGap:=fClosedGap);
+        GVL.astAxes[gap].stControl.eCommand:= E_MotionFunctions.eHome;
+        GVL.astAxes[gap].stConfig.eHomeSeq:= E_HomingRoutines.eHomeDirect;
+        GVL.astAxes[gap].stConfig.fHomePosition:= fbCalcGap.GapSize;
+        GVL.astAxes[gap].stControl.bExecute:=TRUE;
+        iState:=2;
+    END_IF
+    
+2://Wait for calibration complete
+    IF (GVL.astAxes[gap].stStatus.bHomed) THEN
+        iState:=10;
+	END_IF
+    
+10://Everything calibrated, start intercepting absolute position moves
+//Check for absolute position move of virtual axis and issue move to blades if move executed
+IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL.astAxes[gap].stControl.bExecute AND GVL.astAxes[gap].stStatus.bEnabled THEN
+    fbCalcAngle(GapSize:=GVL.astAxes[gap].stConfig.fPosition);
+    GVL.astAxes[bladeA].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
+    GVL.astAxes[bladeA].stConfig.fPosition := fbCalcAngle.AngleBladeB;
+    GVL.astAxes[bladeA].stConfig.fVelocity:=1;
+    GVL.astAxes[bladeA].stControl.bExecute:=TRUE;
+    GVL.astAxes[bladeB].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
+    GVL.astAxes[bladeB].stConfig.fPosition := fbCalcAngle.AngleBladeA;
+    GVL.astAxes[bladeB].stConfig.fVelocity:=1;
+    GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
+END_IF
+
+999: //ERROR STATE
+    GVL.astAxes[gap].stControl.bEnable:= FALSE;
+    //Wait for reset of axes and block moves.
+    IF NOT(GVL.astAxes[bladeA].stStatus.bError AND GVL.astAxes[bladeB].stStatus.bError) THEN
+        iState:=10;
+	END_IF
+    
+END_CASE
+
+IF GVL.astAxes[bladeA].stStatus.bError OR GVL.astAxes[bladeB].stStatus.bError THEN
+    iState:=999;
+END_IF
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_BarnDoors">
+      <LineId Id="20" Count="0" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="24" Count="2" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="117" Count="3" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="123" Count="3" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="139" Count="2" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="66" Count="4" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="78" Count="10" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="133" Count="2" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
