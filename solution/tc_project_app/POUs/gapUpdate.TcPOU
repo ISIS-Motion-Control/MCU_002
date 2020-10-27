@@ -1,29 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="gapUpdate" Id="{052ae45b-4e00-406b-8780-3da133e30d51}" SpecialFunc="None">
     <Declaration><![CDATA[//{attribute 'TcCallAfterOutputUpdate' }
 PROGRAM gapUpdate
 VAR
     fbCalcGap1 : FB_CalculateGap;
+    fbCalcGap2 : FB_CalculateGap;
+    fbCalcGap3 : FB_CalculateGap;
     //FB Variables for Muon Gates
-    StateMachine: INT;
-    i : UINT;
-    fPositionToSet : LREAL;
-    toggleExecute : BOOL;
-    fCalculatedPosition AT %Q*: REAL;
-    fCalculatedInt AT %Q* : DINT;
+    //StateMachine: INT;
+    //i : UINT;
+    //fPositionToSet : LREAL;
+    //toggleExecute : BOOL;
+    //fCalculatedPosition AT %Q*: REAL;
+    //fCalculatedInt AT %Q* : DINT;
+    
+    ENC_CONSTANT : LREAL := 10000;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[fbCalcGap1.AngleBladeA := GVL.astAxes[1].stStatus.fActPosition;
 fbCalcGap1.AngleBladeB := GVL.astAxes[2].stStatus.fActPosition;
+fbCalcGap1.ENC_CONSTANT:= ENC_CONSTANT;
 fbCalcGap1();
-fCalculatedPosition:= fbCalcGap1.GapSize;
-fCalculatedPosition:= fCalculatedPosition*10000;
-fCalculatedInt:=  REAL_TO_DINT(fCalculatedPosition);]]></ST>
+
+fbCalcGap2.AngleBladeA := GVL.astAxes[3].stStatus.fActPosition;
+fbCalcGap2.AngleBladeB := GVL.astAxes[4].stStatus.fActPosition;
+fbCalcGap2.ENC_CONSTANT:= ENC_CONSTANT;
+fbCalcGap2();
+
+fbCalcGap3.AngleBladeA := GVL.astAxes[5].stStatus.fActPosition;
+fbCalcGap3.AngleBladeB := GVL.astAxes[6].stStatus.fActPosition;
+fbCalcGap3.ENC_CONSTANT:= ENC_CONSTANT;
+fbCalcGap3();
+//fCalculatedPosition:= fbCalcGap1.GapSize;
+//fCalculatedPosition:= fCalculatedPosition*10000;
+//fCalculatedInt:=  REAL_TO_DINT(fCalculatedPosition);]]></ST>
     </Implementation>
     <LineIds Name="gapUpdate">
-      <LineId Id="17" Count="4" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="40" Count="3" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="45" Count="3" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="20" Count="1" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

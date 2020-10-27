@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_CalculateGap" Id="{eb587f1b-0364-468c-9da3-6eac971ef0df}" SpecialFunc="None">
     <Declaration><![CDATA[//This function is used to calculate the gap size between two 'barn door' type blades
 FUNCTION_BLOCK FB_CalculateGap
@@ -10,11 +10,13 @@ AngleBladeA : LREAL;
 AngleBladeB : LREAL;
 fBladeSize : LREAL:=62.94;
 fClosedGap : LREAL:=2.00;
+ENC_CONSTANT : LREAL;
 END_VAR
 
 VAR_OUTPUT
 
 GapSize : LREAL;
+iGapSize AT %Q* : DINT;
 
 END_VAR
 
@@ -24,10 +26,12 @@ VAR
 
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[GapSize := fClosedGap + fBladeSize*(2-(COS(DEG_TO_RAD(AngleBladeA)) + COS(DEG_TO_RAD(AngleBladeB))));]]></ST>
+      <ST><![CDATA[GapSize := fClosedGap + fBladeSize*(2-(COS(DEG_TO_RAD(AngleBladeA)) + COS(DEG_TO_RAD(AngleBladeB))));
+iGapSize := REAL_TO_DINT(GapSize * ENC_CONSTANT);]]></ST>
     </Implementation>
     <LineIds Name="FB_CalculateGap">
       <LineId Id="14" Count="0" />
+      <LineId Id="38" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

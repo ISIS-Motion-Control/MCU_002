@@ -1861,12 +1861,10 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo SlowManual="0.5" FastManual="1.5" Maximum="200"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
 				<PositionAreaControl Range="0.05"/>
 				<TargetPosControl Range="0.05" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
-				<ParameterChanged>19</ParameterChanged>
-				<ParameterChanged>16</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
@@ -1874,7 +1872,6 @@ External Setpoint Generation:
 					<SoftEndMinControl Range="-97"/>
 					<SoftEndMaxControl Range="18"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
-					<ParameterChanged>8</ParameterChanged>
 				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -1943,7 +1940,6 @@ External Setpoint Generation:
 				<DrvPara>
 					<Analog VeloReferenz="180" ScaleFactorActTorque="0.1"/>
 					<TimeComp TaskDelayCycles="1"/>
-					<ParameterChanged>6</ParameterChanged>
 				</DrvPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -2027,9 +2023,8 @@ Drive Status 4 (manually linked):
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
 					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosKp="0" PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
+					<PID PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
 					<Observer BandWidth="20"/>
-					<ParameterChanged>258</ParameterChanged>
 				</CtrPara>
 			</Controller>
 			<Vars VarGrpType="1" InsertType="1">
@@ -2091,15 +2086,14 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo SlowManual="0.1" FastManual="0.5" Maximum="200"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0" FastManual="1.5" Maximum="200"/>
 				<PositionAreaControl Range="0.05"/>
 				<TargetPosControl Range="0.05" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
-				<ParameterChanged>19</ParameterChanged>
-				<ParameterChanged>16</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
+					<FilterTime TPos="0.2"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
 				</EncPara>
 				<Vars VarGrpType="1">
@@ -2252,9 +2246,7 @@ Drive Status 4 (manually linked):
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
 					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosKp="0"/>
 					<Observer BandWidth="20"/>
-					<ParameterChanged>258</ParameterChanged>
 				</CtrPara>
 			</Controller>
 			<Vars VarGrpType="1" InsertType="1">
@@ -2313,7 +2305,7 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="3" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 1">
+		<Axis Id="8" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 1">
 			<Name>Gap 1 (mm)</Name>
 			<AxisPara>
 				<PositionAreaControl Enable="false"/>
@@ -2531,17 +2523,15 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="4" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 2">
+		<Axis Id="3" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 2">
 			<Name>Blade 2A</Name>
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo SlowManual="0.5" FastManual="1.5" Maximum="200"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
 				<PositionAreaControl Range="0.05"/>
 				<TargetPosControl Range="0.05" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
-				<ParameterChanged>19</ParameterChanged>
-				<ParameterChanged>16</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
@@ -2549,7 +2539,6 @@ External Setpoint Generation:
 					<SoftEndMinControl Range="-97"/>
 					<SoftEndMaxControl Range="18"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
-					<ParameterChanged>8</ParameterChanged>
 				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -2618,7 +2607,6 @@ External Setpoint Generation:
 				<DrvPara>
 					<Analog VeloReferenz="180" ScaleFactorActTorque="0.1"/>
 					<TimeComp TaskDelayCycles="1"/>
-					<ParameterChanged>6</ParameterChanged>
 				</DrvPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -2702,9 +2690,8 @@ Drive Status 4 (manually linked):
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
 					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosKp="0" PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
+					<PID PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
 					<Observer BandWidth="20"/>
-					<ParameterChanged>258</ParameterChanged>
 				</CtrPara>
 			</Controller>
 			<Vars VarGrpType="1" InsertType="1">
@@ -2763,20 +2750,19 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="5" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 2">
+		<Axis Id="4" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 2">
 			<Name>Blade 2B</Name>
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo SlowManual="0.1" FastManual="0.5" Maximum="200"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
 				<PositionAreaControl Range="0.05"/>
 				<TargetPosControl Range="0.05" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
-				<ParameterChanged>19</ParameterChanged>
-				<ParameterChanged>16</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
+					<FilterTime TPos="0.2"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
 				</EncPara>
 				<Vars VarGrpType="1">
@@ -2929,9 +2915,7 @@ Drive Status 4 (manually linked):
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
 					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosKp="0"/>
 					<Observer BandWidth="20"/>
-					<ParameterChanged>258</ParameterChanged>
 				</CtrPara>
 			</Controller>
 			<Vars VarGrpType="1" InsertType="1">
@@ -2990,7 +2974,7 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="6" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 2">
+		<Axis Id="9" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 2">
 			<Name>Gap 2 (mm)</Name>
 			<AxisPara>
 				<PositionAreaControl Enable="false"/>
@@ -3208,17 +3192,15 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="7" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 3">
+		<Axis Id="5" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 3">
 			<Name>Blade 3A</Name>
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo SlowManual="0.5" FastManual="1.5" Maximum="200"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
 				<PositionAreaControl Range="0.05"/>
 				<TargetPosControl Range="0.05" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
-				<ParameterChanged>19</ParameterChanged>
-				<ParameterChanged>16</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
@@ -3226,7 +3208,6 @@ External Setpoint Generation:
 					<SoftEndMinControl Range="-97"/>
 					<SoftEndMaxControl Range="18"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
-					<ParameterChanged>8</ParameterChanged>
 				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -3295,7 +3276,6 @@ External Setpoint Generation:
 				<DrvPara>
 					<Analog VeloReferenz="180" ScaleFactorActTorque="0.1"/>
 					<TimeComp TaskDelayCycles="1"/>
-					<ParameterChanged>6</ParameterChanged>
 				</DrvPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -3379,9 +3359,8 @@ Drive Status 4 (manually linked):
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
 					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosKp="0" PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
+					<PID PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
 					<Observer BandWidth="20"/>
-					<ParameterChanged>258</ParameterChanged>
 				</CtrPara>
 			</Controller>
 			<Vars VarGrpType="1" InsertType="1">
@@ -3440,20 +3419,19 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="8" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 3">
+		<Axis Id="6" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 3">
 			<Name>Blade 3B</Name>
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo SlowManual="0.1" FastManual="0.5" Maximum="200"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
 				<PositionAreaControl Range="0.05"/>
 				<TargetPosControl Range="0.05" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
-				<ParameterChanged>19</ParameterChanged>
-				<ParameterChanged>16</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
+					<FilterTime TPos="0.2"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
 				</EncPara>
 				<Vars VarGrpType="1">
@@ -3606,9 +3584,7 @@ Drive Status 4 (manually linked):
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
 					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosKp="0"/>
 					<Observer BandWidth="20"/>
-					<ParameterChanged>258</ParameterChanged>
 				</CtrPara>
 			</Controller>
 			<Vars VarGrpType="1" InsertType="1">
@@ -3667,7 +3643,7 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="9" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 3">
+		<Axis Id="10" CreateSymbols="true" AxisType="1" AxisFolder="Barn Door 3">
 			<Name>Gap 3 (mm)</Name>
 			<AxisPara>
 				<PositionAreaControl Enable="false"/>
@@ -3885,7 +3861,7 @@ External Setpoint Generation:
 				</Var>
 			</Vars>
 		</Axis>
-		<Axis Id="20" CreateSymbols="true" AxisType="1">
+		<Axis Id="7" CreateSymbols="true" AxisType="1">
 			<Name>Momentum Slits</Name>
 			<AxisPara>
 				<OtherSettings AllowMotionCmdToSlave="true"/>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="MAIN" Id="{33eb6f49-7781-4211-a70b-87ada6d80cb7}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -9,21 +9,8 @@ VAR
 
 
 (******Outputs: Power for Limit switches and Home Sensors (every 4th output)********)
-
-    bOutput1 AT %Q*: BOOL:= TRUE;
-    bOutput2 AT %Q*: BOOL:= TRUE;
-    bOutput3 AT %Q*: BOOL:= TRUE;
-    bOutput4 AT %Q*: BOOL:= TRUE;
-    bOutput5 AT %Q*: BOOL:= TRUE;
-    bOutput6 AT %Q*: BOOL:= TRUE;
-    bOutput7 AT %Q*: BOOL:= TRUE;
-    bOutput8 AT %Q*: BOOL:= TRUE;
-    //bOutput9 AT %Q*: BOOL:= TRUE;
-    //bOutput13 AT %Q*: BOOL:= TRUE;
-    //bOutput17 AT %Q*: BOOL:= TRUE;
-    //bOutput21 AT %Q*: BOOL:= TRUE;
-    //bOutput24 AT %Q*: BOOL:= TRUE;
-    //bOutput28 AT %Q*: BOOL:= TRUE;
+    bSwPower AT %Q*: ARRAY [1..19] OF BOOL;
+    i : INT;
 
 //Startup, Shutdown and UPS
     fbUPS: FB_S_UPS_CX51x0;
@@ -46,18 +33,16 @@ END_VAR
 VAR PERSISTENT
     bRestoreOnStartup : BOOL;
 END_VAR
-VAR
-    bEnableAxis1Limits AT %Q*: BOOL:=TRUE;
-    bEnableAxis2Limits AT %Q*: BOOL:=TRUE;
-    bEnableAxis1Enc AT %Q*: BOOL:=TRUE;
-    bEnableAxis2Enc AT %Q*: BOOL:=TRUE;
-END_VAR
+
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[POSITION_RECOVERY();
 PROG();
 AXES();
-]]></ST>
+
+FOR i:=1 TO 19 DO
+    bSwPower[i]:= TRUE;
+END_FOR]]></ST>
     </Implementation>
     <Folder Name="POSITION_RECOVERY" Id="{3561f6ef-e145-4ed3-9839-f17334bd2d97}" />
     <Action Name="AXES" Id="{7eb32732-9b53-4934-8cd9-20ba971dd8ff}">
@@ -245,7 +230,9 @@ END_FOR]]></ST>
       <LineId Id="505" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="81" Count="0" />
+      <LineId Id="620" Count="0" />
       <LineId Id="567" Count="0" />
+      <LineId Id="621" Count="1" />
     </LineIds>
     <LineIds Name="MAIN.AXES">
       <LineId Id="1" Count="0" />
