@@ -1861,17 +1861,18 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
-				<PositionAreaControl Range="0.05"/>
-				<TargetPosControl Range="0.05" Time="0.1"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<PositionAreaControl Range="0.01"/>
+				<TargetPosControl Range="0.01" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
-				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
+				<EncPara ScaleFactorNumerator="0.009" Offset="10" Inverse="true" MaxCount="#x0000ffff">
 					<FilterTime TPos="0.2"/>
 					<SoftEndMinControl Range="-97"/>
 					<SoftEndMaxControl Range="18"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
+					<ParameterChanged>7</ParameterChanged>
 				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -2022,8 +2023,8 @@ Drive Status 4 (manually linked):
 			</Drive>
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
-					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
+					<PosDiffControl Range="0.5" Time="1"/>
+					<PID PosKp="2" PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
 					<Observer BandWidth="20"/>
 				</CtrPara>
 			</Controller>
@@ -2086,9 +2087,9 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0" FastManual="1.5" Maximum="200"/>
-				<PositionAreaControl Range="0.05"/>
-				<TargetPosControl Range="0.05" Time="0.1"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0" FastManual="1.5" Maximum="10"/>
+				<PositionAreaControl Range="0.01"/>
+				<TargetPosControl Range="0.01" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -2245,7 +2246,8 @@ Drive Status 4 (manually linked):
 			</Drive>
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
-					<PosDiffControl Range="0.5" Time="0.5"/>
+					<PosDiffControl Range="0.5" Time="1"/>
+					<PID PosKp="2"/>
 					<Observer BandWidth="20"/>
 				</CtrPara>
 			</Controller>
@@ -2528,9 +2530,9 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
-				<PositionAreaControl Range="0.05"/>
-				<TargetPosControl Range="0.05" Time="0.1"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<PositionAreaControl Range="0.01"/>
+				<TargetPosControl Range="0.01" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -2689,8 +2691,8 @@ Drive Status 4 (manually linked):
 			</Drive>
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
-					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
+					<PosDiffControl Range="0.5" Time="1"/>
+					<PID PosKp="2" PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
 					<Observer BandWidth="20"/>
 				</CtrPara>
 			</Controller>
@@ -2755,9 +2757,9 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
-				<PositionAreaControl Range="0.05"/>
-				<TargetPosControl Range="0.05" Time="0.1"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<PositionAreaControl Range="0.01"/>
+				<TargetPosControl Range="0.01" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -2914,7 +2916,8 @@ Drive Status 4 (manually linked):
 			</Drive>
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
-					<PosDiffControl Range="0.5" Time="0.5"/>
+					<PosDiffControl Range="0.5" Time="1"/>
+					<PID PosKp="2"/>
 					<Observer BandWidth="20"/>
 				</CtrPara>
 			</Controller>
@@ -3197,9 +3200,9 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
-				<PositionAreaControl Range="0.05"/>
-				<TargetPosControl Range="0.05" Time="0.1"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<PositionAreaControl Range="0.01"/>
+				<TargetPosControl Range="0.01" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -3358,8 +3361,8 @@ Drive Status 4 (manually linked):
 			</Drive>
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
-					<PosDiffControl Range="0.5" Time="0.5"/>
-					<PID PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
+					<PosDiffControl Range="0.5" Time="1"/>
+					<PID PosKp="2" PosTn="1" PosTv="1" PosTd="1" DeadBandPosition="0.1"/>
 					<Observer BandWidth="20"/>
 				</CtrPara>
 			</Controller>
@@ -3424,9 +3427,9 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="200"/>
-				<PositionAreaControl Range="0.05"/>
-				<TargetPosControl Range="0.05" Time="0.1"/>
+				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<PositionAreaControl Range="0.01"/>
+				<TargetPosControl Range="0.01" Time="0.1"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -3583,7 +3586,8 @@ Drive Status 4 (manually linked):
 			</Drive>
 			<Controller Name="Ctrl" CtrType="1">
 				<CtrPara PriorControlFactor="1">
-					<PosDiffControl Range="0.5" Time="0.5"/>
+					<PosDiffControl Range="0.5" Time="1"/>
+					<PID PosKp="2"/>
 					<Observer BandWidth="20"/>
 				</CtrPara>
 			</Controller>

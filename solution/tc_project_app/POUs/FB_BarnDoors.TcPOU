@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
   <POU Name="FB_BarnDoors" Id="{b6c2e4cf-4c7d-4459-a188-0564af6adf0d}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_BarnDoors
 VAR_INPUT
@@ -20,10 +20,13 @@ VAR
     fbCalcGap : FB_CalculateGap;
     fbCalcAngle : FB_CalculateAngle;
     
+    timeout: TON;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//Geometry check
+      <ST><![CDATA[timeout.PT:=T#2S; //2second timeout to attempt rehomes
+timeout();
+//Geometry check
 (*Position values outside the allowable range defined by the blade geometry cannot be reached but will result in errors during calculation*)
 //Check upper limit
 IF GVL.astAxes[gap].stConfig.fPosition > (2*fBladeSize+fClosedGap) THEN
@@ -35,16 +38,18 @@ IF GVL.astAxes[gap].stConfig.fPosition < (fClosedGap) THEN
 END_IF
 
 //Check switches and enables (wouldn't cause crash)
-IF GVL.astAxes[bladeA].stStatus.bFwEnabled AND GVL.astAxes[bladeB].stStatus.bFwEnabled THEN
+IF GVL.astAxes[bladeA].stStatus.bBwEnabled AND GVL.astAxes[bladeB].stStatus.bFwEnabled THEN
     GVL.astAxes[gap].stInputs.bLimitFwd:= TRUE;
 ELSE
     GVL.astAxes[gap].stInputs.bLimitFwd:= FALSE;
 END_IF
-IF GVL.astAxes[bladeA].stStatus.bBwEnabled AND GVL.astAxes[bladeB].stStatus.bBwEnabled THEN
+
+IF GVL.astAxes[bladeA].stStatus.bFwEnabled AND GVL.astAxes[bladeB].stStatus.bBwEnabled THEN
     GVL.astAxes[gap].stInputs.bLimitBwd:= TRUE;
 ELSE
     GVL.astAxes[gap].stInputs.bLimitBwd:= FALSE;
 END_IF
+
 IF GVL.astAxes[bladeA].stStatus.bEnabled AND GVL.astAxes[bladeB].stStatus.bEnabled THEN
     GVL.astAxes[gap].stControl.bEnable:= TRUE;
 ELSE
@@ -59,19 +64,35 @@ CASE iState OF
         iState:=1;
 	END_IF
 
-1://Wait for all axes calibrated, if bladeA AND bladeB calibrated, can direct home gap to the correct value
+1:
+    IF (NOT GVL.astAxes[bladeA].stStatus.bHomed) OR (NOT GVL.astAxes[bladeB].stStatus.bHomed) THEN
+        GVL.astAxes[bladeA].stControl.eCommand:=E_MotionFunctions.eHome;
+        GVL.astAxes[bladeA].stControl.bExecute:=TRUE;
+        GVL.astAxes[bladeB].stControl.eCommand:=E_MotionFunctions.eHome;
+        GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
+	END_IF
+    iState:= 2;
+
+2://Wait for all axes calibrated, if bladeA AND bladeB calibrated, can direct home gap to the correct value
     IF (GVL.astAxes[bladeA].stStatus.bHomed AND GVL.astAxes[bladeB].stStatus.bHomed) THEN
         fbCalcGap(AngleBladeA:=GVL.astAxes[bladeA].stStatus.fActPosition,AngleBladeB:=GVL.astAxes[bladeB].stStatus.fActPosition,fBladeSize:= fBladeSize, fClosedGap:=fClosedGap);
         GVL.astAxes[gap].stControl.eCommand:= E_MotionFunctions.eHome;
         GVL.astAxes[gap].stConfig.eHomeSeq:= E_HomingRoutines.eHomeDirect;
         GVL.astAxes[gap].stConfig.fHomePosition:= fbCalcGap.GapSize;
         GVL.astAxes[gap].stControl.bExecute:=TRUE;
-        iState:=2;
+        iState:=3;
+        timeout.IN:=TRUE;
     END_IF
     
-2://Wait for calibration complete
+3://Wait for calibration complete
+    //IF (GVL.astAxes[bladeA].stStatus.bHomed) AND (GVL.astAxes[bladeB].stStatus.bHomed) THEN
+        //iState:=10;    
     IF (GVL.astAxes[gap].stStatus.bHomed) THEN
         iState:=10;
+	END_IF
+    IF timeout.Q THEN
+        timeout.IN:=FALSE;
+        iState:=0;
 	END_IF
     
 10://Everything calibrated, start intercepting absolute position moves
@@ -80,11 +101,11 @@ IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL
     fbCalcAngle(GapSize:=GVL.astAxes[gap].stConfig.fPosition);
     GVL.astAxes[bladeA].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
     GVL.astAxes[bladeA].stConfig.fPosition := fbCalcAngle.AngleBladeB;
-    GVL.astAxes[bladeA].stConfig.fVelocity:=1;
+    GVL.astAxes[bladeA].stConfig.fVelocity:=GVL.astAxes[gap].stConfig.fVelocity;
     GVL.astAxes[bladeA].stControl.bExecute:=TRUE;
     GVL.astAxes[bladeB].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
     GVL.astAxes[bladeB].stConfig.fPosition := fbCalcAngle.AngleBladeA;
-    GVL.astAxes[bladeB].stConfig.fVelocity:=1;
+    GVL.astAxes[bladeB].stConfig.fVelocity:=GVL.astAxes[gap].stConfig.fVelocity;
     GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
 END_IF
 
@@ -92,7 +113,7 @@ END_IF
     GVL.astAxes[gap].stControl.bEnable:= FALSE;
     //Wait for reset of axes and block moves.
     IF NOT(GVL.astAxes[bladeA].stStatus.bError AND GVL.astAxes[bladeB].stStatus.bError) THEN
-        iState:=10;
+        iState:=0;
 	END_IF
     
 END_CASE
@@ -104,6 +125,7 @@ END_IF
 ]]></ST>
     </Implementation>
     <LineIds Name="FB_BarnDoors">
+      <LineId Id="180" Count="1" />
       <LineId Id="20" Count="0" />
       <LineId Id="43" Count="1" />
       <LineId Id="21" Count="2" />
@@ -114,8 +136,10 @@ END_IF
       <LineId Id="110" Count="1" />
       <LineId Id="113" Count="1" />
       <LineId Id="112" Count="0" />
+      <LineId Id="188" Count="0" />
       <LineId Id="117" Count="3" />
       <LineId Id="116" Count="0" />
+      <LineId Id="187" Count="0" />
       <LineId Id="123" Count="3" />
       <LineId Id="122" Count="0" />
       <LineId Id="121" Count="0" />
@@ -123,6 +147,12 @@ END_IF
       <LineId Id="46" Count="1" />
       <LineId Id="137" Count="0" />
       <LineId Id="139" Count="2" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="169" Count="1" />
+      <LineId Id="172" Count="2" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="175" Count="0" />
       <LineId Id="138" Count="0" />
       <LineId Id="51" Count="0" />
       <LineId Id="57" Count="0" />
@@ -132,8 +162,15 @@ END_IF
       <LineId Id="56" Count="0" />
       <LineId Id="62" Count="0" />
       <LineId Id="64" Count="0" />
+      <LineId Id="182" Count="0" />
       <LineId Id="55" Count="0" />
-      <LineId Id="66" Count="4" />
+      <LineId Id="66" Count="1" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="68" Count="2" />
+      <LineId Id="183" Count="1" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="185" Count="0" />
       <LineId Id="89" Count="0" />
       <LineId Id="74" Count="0" />
       <LineId Id="78" Count="10" />

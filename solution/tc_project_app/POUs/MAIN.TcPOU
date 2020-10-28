@@ -40,9 +40,26 @@ END_VAR
 PROG();
 AXES();
 
+
+//Power all the switch outputs (individual power)
 FOR i:=1 TO 19 DO
     bSwPower[i]:= TRUE;
-END_FOR]]></ST>
+END_FOR
+
+GVL.astAxes[1].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
+GVL.astAxes[2].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+GVL.astAxes[3].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
+GVL.astAxes[4].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+GVL.astAxes[5].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
+GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+
+GVL.astAxes[1].stConfig.fHomePosition:=0;
+GVL.astAxes[2].stConfig.fHomePosition:=0;
+GVL.astAxes[3].stConfig.fHomePosition:=-2.808;
+GVL.astAxes[4].stConfig.fHomePosition:=1.917;
+GVL.astAxes[5].stConfig.fHomePosition:=0;
+GVL.astAxes[6].stConfig.fHomePosition:=0; //essentially the new position bias.
+]]></ST>
     </Implementation>
     <Folder Name="POSITION_RECOVERY" Id="{3561f6ef-e145-4ed3-9839-f17334bd2d97}" />
     <Action Name="AXES" Id="{7eb32732-9b53-4934-8cd9-20ba971dd8ff}">
@@ -230,9 +247,20 @@ END_FOR]]></ST>
       <LineId Id="505" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="81" Count="0" />
+      <LineId Id="623" Count="1" />
       <LineId Id="620" Count="0" />
       <LineId Id="567" Count="0" />
       <LineId Id="621" Count="1" />
+      <LineId Id="626" Count="0" />
+      <LineId Id="625" Count="0" />
+      <LineId Id="627" Count="0" />
+      <LineId Id="630" Count="0" />
+      <LineId Id="629" Count="0" />
+      <LineId Id="632" Count="0" />
+      <LineId Id="631" Count="0" />
+      <LineId Id="635" Count="0" />
+      <LineId Id="634" Count="0" />
+      <LineId Id="636" Count="5" />
     </LineIds>
     <LineIds Name="MAIN.AXES">
       <LineId Id="1" Count="0" />
