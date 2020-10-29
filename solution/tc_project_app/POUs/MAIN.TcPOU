@@ -28,6 +28,24 @@ VAR
     fbBarnDoor1 :   FB_BarnDoors;
     fbBarnDoor2 :   FB_BarnDoors;
     fbBarnDoor3 :   FB_BarnDoors;
+    
+    //demo test routine data
+    fTargetPositions : ARRAY [1..8] OF LREAL;
+    BLADE1A : INT:= 1;
+    BLADE1B : INT:= 2;
+    BLADE2A : INT:= 3;
+    BLADE2B : INT:= 4;
+    BLADE3A : INT:= 5;
+    BLADE3B : INT:= 6;
+    GAP1    : INT:= 8;
+    GAP2    : INT:= 9;
+    GAP3    : INT:= 10;
+    bRunDemo    : BOOL :=FALSE;
+    iDemoState  : INT:= 0;
+    delayTimer : TON;
+   
+    
+    
 END_VAR
 
 VAR PERSISTENT
@@ -36,29 +54,12 @@ END_VAR
 
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[POSITION_RECOVERY();
+      <ST><![CDATA[DEMO();
+
+POSITION_RECOVERY();
 PROG();
 AXES();
 
-
-//Power all the switch outputs (individual power)
-FOR i:=1 TO 19 DO
-    bSwPower[i]:= TRUE;
-END_FOR
-
-GVL.astAxes[1].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
-GVL.astAxes[2].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
-GVL.astAxes[3].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
-GVL.astAxes[4].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
-GVL.astAxes[5].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
-GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
-
-GVL.astAxes[1].stConfig.fHomePosition:=0;
-GVL.astAxes[2].stConfig.fHomePosition:=0;
-GVL.astAxes[3].stConfig.fHomePosition:=-2.808;
-GVL.astAxes[4].stConfig.fHomePosition:=1.917;
-GVL.astAxes[5].stConfig.fHomePosition:=0;
-GVL.astAxes[6].stConfig.fHomePosition:=0; //essentially the new position bias.
 ]]></ST>
     </Implementation>
     <Folder Name="POSITION_RECOVERY" Id="{3561f6ef-e145-4ed3-9839-f17334bd2d97}" />
@@ -83,6 +84,201 @@ ELSIF eGlobalSUpsState <> eSUPS_PowerOK THEN
     //next cycles of powerfailure
     //skip regular code execution for the remaining cycles of the powerfailure/writing of persistent data/quick shutdown...
     RETURN;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="DEMO" Id="{f5daaa00-6794-4f14-becb-81523694a29a}">
+      <Implementation>
+        <ST><![CDATA[//Demo routine
+GVL.astAxes[GAP1].stStatus.bDone:= GVL.astAxes[BLADE1A].stStatus.bDone AND GVL.astAxes[BLADE1B].stStatus.bDone;
+GVL.astAxes[GAP2].stStatus.bDone:= GVL.astAxes[BLADE2A].stStatus.bDone AND GVL.astAxes[BLADE2B].stStatus.bDone;
+GVL.astAxes[GAP3].stStatus.bDone:= GVL.astAxes[BLADE3A].stStatus.bDone AND GVL.astAxes[BLADE3B].stStatus.bDone;
+
+delayTimer.PT:=T#1S;
+delayTimer();
+
+IF NOT bRunDemo THEN
+    delayTimer.IN:=TRUE;
+END_IF
+
+IF bRunDemo THEN
+    CASE iDemoState OF
+        0: 
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP1].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP1].stConfig.fPosition:= 20;
+                GVL.astAxes[GAP1].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP1].stControl.bExecute:= TRUE;
+                iDemoState:=1;
+                delayTimer.IN:=FALSE;
+			END_IF            
+        1:
+            IF GVL.astAxes[GAP1].stStatus.bDone THEN
+                iDemoState:=2;
+                delayTimer.IN:= TRUE;            
+			END_IF
+        2:
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP1].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP1].stConfig.fPosition:= 5;
+                GVL.astAxes[GAP1].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP1].stControl.bExecute:= TRUE;
+                iDemoState:=3;
+                delayTimer.IN:= FALSE;
+            END_IF
+        3:
+            //IF GVL.astAxes[iGap1].stStatus.bDone AND GVL.astAxes[1].stStatus.bDone AND GVL.astAxes[2].stStatus.bDone THEN
+            IF GVL.astAxes[GAP1].stStatus.bDone THEN
+                iDemoState:=4;
+                delayTimer.IN:= TRUE; 
+			END_IF
+        4: 
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP2].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP2].stConfig.fPosition:= 20;
+                GVL.astAxes[GAP2].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP2].stControl.bExecute:= TRUE;
+                iDemoState:=5;
+                delayTimer.IN:=FALSE;
+			END_IF            
+        5:
+            IF GVL.astAxes[GAP2].stStatus.bDone THEN
+                iDemoState:=6;
+                delayTimer.IN:= TRUE;            
+			END_IF
+        6:
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP2].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP2].stConfig.fPosition:= 5;
+                GVL.astAxes[GAP2].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP2].stControl.bExecute:= TRUE;
+                iDemoState:=7;
+                delayTimer.IN:= FALSE;
+            END_IF
+        7:
+            //IF GVL.astAxes[iGap1].stStatus.bDone AND GVL.astAxes[1].stStatus.bDone AND GVL.astAxes[2].stStatus.bDone THEN
+            IF GVL.astAxes[GAP2].stStatus.bDone THEN
+                iDemoState:=8;
+                delayTimer.IN:= TRUE; 
+			END_IF
+        8: 
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP3].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP3].stConfig.fPosition:= 20;
+                GVL.astAxes[GAP3].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP3].stControl.bExecute:= TRUE;
+                iDemoState:=9;
+                delayTimer.IN:=FALSE;
+			END_IF            
+        9:
+            IF GVL.astAxes[GAP3].stStatus.bDone THEN
+                iDemoState:=10;
+                delayTimer.IN:= TRUE;            
+			END_IF
+        10:
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP3].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP3].stConfig.fPosition:= 5;
+                GVL.astAxes[GAP3].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP3].stControl.bExecute:= TRUE;
+                iDemoState:=11;
+                delayTimer.IN:= FALSE;
+            END_IF
+        11:
+            IF GVL.astAxes[GAP3].stStatus.bDone THEN
+                iDemoState:=12;
+                delayTimer.IN:= TRUE; 
+			END_IF
+            
+        12: //all together now
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP3].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP3].stConfig.fPosition:= 50;
+                GVL.astAxes[GAP3].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP3].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP2].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP2].stConfig.fPosition:= 50;
+                GVL.astAxes[GAP2].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP2].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP1].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP1].stConfig.fPosition:= 50;
+                GVL.astAxes[GAP1].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP1].stControl.bExecute:= TRUE;
+                iDemoState:=13;
+                delayTimer.IN:= FALSE;
+            END_IF
+        13:
+            IF GVL.astAxes[GAP3].stStatus.bDone AND GVL.astAxes[GAP2].stStatus.bDone AND GVL.astAxes[GAP1].stStatus.bDone THEN
+                iDemoState:=14;
+                delayTimer.IN:= TRUE; 
+			END_IF
+        14: //all together now
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP3].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP3].stConfig.fPosition:= 40;
+                GVL.astAxes[GAP3].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP3].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP2].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP2].stConfig.fPosition:= 30;
+                GVL.astAxes[GAP2].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP2].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP1].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP1].stConfig.fPosition:= 20;
+                GVL.astAxes[GAP1].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP1].stControl.bExecute:= TRUE;
+                iDemoState:=15;
+                delayTimer.IN:= FALSE;
+            END_IF
+        15:
+            IF GVL.astAxes[GAP3].stStatus.bDone AND GVL.astAxes[GAP2].stStatus.bDone AND GVL.astAxes[GAP1].stStatus.bDone THEN
+                iDemoState:=16;
+                delayTimer.IN:= TRUE; 
+			END_IF
+        16: //all together now
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP3].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP3].stConfig.fPosition:= 20;
+                GVL.astAxes[GAP3].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP3].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP2].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP2].stConfig.fPosition:= 30;
+                GVL.astAxes[GAP2].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP2].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP1].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP1].stConfig.fPosition:= 40;
+                GVL.astAxes[GAP1].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP1].stControl.bExecute:= TRUE;
+                iDemoState:=17;
+                delayTimer.IN:= FALSE;
+            END_IF
+        17:
+            IF GVL.astAxes[GAP3].stStatus.bDone AND GVL.astAxes[GAP2].stStatus.bDone AND GVL.astAxes[GAP1].stStatus.bDone THEN
+                iDemoState:=18;
+                delayTimer.IN:= TRUE; 
+			END_IF
+        18: //all together now
+            IF delayTimer.Q THEN
+                GVL.astAxes[GAP3].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP3].stConfig.fPosition:= 15;
+                GVL.astAxes[GAP3].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP3].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP2].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP2].stConfig.fPosition:= 15;
+                GVL.astAxes[GAP2].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP2].stControl.bExecute:= TRUE;
+                GVL.astAxes[GAP1].stControl.eCommand:=E_MotionFunctions.eMoveAbsolute;
+                GVL.astAxes[GAP1].stConfig.fPosition:= 15;
+                GVL.astAxes[GAP1].stConfig.fVelocity:= 5;
+                GVL.astAxes[GAP1].stControl.bExecute:= TRUE;
+                iDemoState:=19;
+                delayTimer.IN:= FALSE;
+            END_IF
+        19:
+            IF GVL.astAxes[GAP3].stStatus.bDone AND GVL.astAxes[GAP2].stStatus.bDone AND GVL.astAxes[GAP1].stStatus.bDone THEN
+                iDemoState:=0;
+                delayTimer.IN:= TRUE; 
+			END_IF
+    END_CASE
 END_IF]]></ST>
       </Implementation>
     </Action>
@@ -113,6 +309,24 @@ END_IF]]></ST>
 (*This application uses a set position functionblock to update
 the gap size value of a virtual axis based on two real world barn door jaw blades.
 The gap size is limited by the geometry of the jaws defined by the closed gap size and the blade size*)
+FOR i:=1 TO 19 DO
+    bSwPower[i]:= TRUE;
+END_FOR
+
+GVL.astAxes[1].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
+GVL.astAxes[2].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+GVL.astAxes[3].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
+GVL.astAxes[4].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+GVL.astAxes[5].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
+GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+
+GVL.astAxes[1].stConfig.fHomePosition:=0;
+GVL.astAxes[2].stConfig.fHomePosition:=0;
+GVL.astAxes[3].stConfig.fHomePosition:=-2.808;
+GVL.astAxes[4].stConfig.fHomePosition:=1.917;
+GVL.astAxes[5].stConfig.fHomePosition:=0;
+GVL.astAxes[6].stConfig.fHomePosition:=0; //essentially the new position bias.
+
 
 fbBarnDoor1(bladeA:=1,bladeB:=2,gap:=8,fClosedGap:=2,fBladeSize:=62.94);
 fbBarnDoor2(bladeA:=3,bladeB:=4,gap:=9,fClosedGap:=2,fBladeSize:=62.94);
@@ -244,23 +458,13 @@ END_FOR]]></ST>
       </Implementation>
     </Action>
     <LineIds Name="MAIN">
+      <LineId Id="772" Count="0" />
+      <LineId Id="684" Count="0" />
       <LineId Id="505" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="81" Count="0" />
-      <LineId Id="623" Count="1" />
-      <LineId Id="620" Count="0" />
-      <LineId Id="567" Count="0" />
-      <LineId Id="621" Count="1" />
-      <LineId Id="626" Count="0" />
-      <LineId Id="625" Count="0" />
-      <LineId Id="627" Count="0" />
-      <LineId Id="630" Count="0" />
-      <LineId Id="629" Count="0" />
-      <LineId Id="632" Count="0" />
-      <LineId Id="631" Count="0" />
-      <LineId Id="635" Count="0" />
-      <LineId Id="634" Count="0" />
-      <LineId Id="636" Count="5" />
+      <LineId Id="640" Count="0" />
+      <LineId Id="658" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.AXES">
       <LineId Id="1" Count="0" />
@@ -269,6 +473,37 @@ END_FOR]]></ST>
     </LineIds>
     <LineIds Name="MAIN.CHECK_UPS">
       <LineId Id="14" Count="11" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.DEMO">
+      <LineId Id="2" Count="1" />
+      <LineId Id="79" Count="1" />
+      <LineId Id="4" Count="6" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="12" Count="10" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="18" />
+      <LineId Id="51" Count="27" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="82" Count="23" />
+      <LineId Id="107" Count="2" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="113" Count="4" />
+      <LineId Id="123" Count="2" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="126" Count="2" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="131" Count="2" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="135" Count="20" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="156" Count="42" />
+      <LineId Id="45" Count="1" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.enableAxis">
@@ -282,7 +517,10 @@ END_FOR]]></ST>
     <LineIds Name="MAIN.PROG">
       <LineId Id="3" Count="0" />
       <LineId Id="136" Count="2" />
+      <LineId Id="155" Count="15" />
       <LineId Id="149" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="171" Count="0" />
       <LineId Id="135" Count="0" />
       <LineId Id="4" Count="0" />
       <LineId Id="154" Count="0" />

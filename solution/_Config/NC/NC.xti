@@ -1872,7 +1872,6 @@ External Setpoint Generation:
 					<SoftEndMinControl Range="-97"/>
 					<SoftEndMaxControl Range="18"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
-					<ParameterChanged>7</ParameterChanged>
 				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
@@ -2315,7 +2314,9 @@ External Setpoint Generation:
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="16">
-				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff" ReferenceSystem="1"/>
+				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff">
+					<ParameterChanged>25</ParameterChanged>
+				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
 					<Var>
@@ -2985,7 +2986,7 @@ External Setpoint Generation:
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="16">
-				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff" ReferenceSystem="1"/>
+				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff"/>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
 					<Var>
@@ -3655,7 +3656,9 @@ External Setpoint Generation:
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="16">
-				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff" ReferenceSystem="1"/>
+				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff">
+					<ParameterChanged>25</ParameterChanged>
+				</EncPara>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
 					<Var>

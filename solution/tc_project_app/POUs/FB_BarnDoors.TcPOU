@@ -109,6 +109,7 @@ IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL
     GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
 END_IF
 
+
 999: //ERROR STATE
     GVL.astAxes[gap].stControl.bEnable:= FALSE;
     //Wait for reset of axes and block moves.
@@ -175,6 +176,7 @@ END_IF
       <LineId Id="74" Count="0" />
       <LineId Id="78" Count="10" />
       <LineId Id="72" Count="0" />
+      <LineId Id="189" Count="0" />
       <LineId Id="130" Count="0" />
       <LineId Id="129" Count="0" />
       <LineId Id="131" Count="0" />
