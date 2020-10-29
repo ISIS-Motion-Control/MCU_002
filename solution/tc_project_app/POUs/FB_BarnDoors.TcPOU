@@ -28,6 +28,8 @@ END_VAR
 timeout();
 //Geometry check
 (*Position values outside the allowable range defined by the blade geometry cannot be reached but will result in errors during calculation*)
+
+(* Have moved the limit checks to the calculateAngle functionblock. This is to allow the use of moverelatives
 //Check upper limit
 IF GVL.astAxes[gap].stConfig.fPosition > (2*fBladeSize+fClosedGap) THEN
     GVL.astAxes[gap].stConfig.fPosition:= 2*fBladeSize+fClosedGap;
@@ -36,6 +38,8 @@ END_IF
 IF GVL.astAxes[gap].stConfig.fPosition < (fClosedGap) THEN
     GVL.astAxes[gap].stConfig.fPosition:= fClosedGap;
 END_IF
+*)
+
 
 //Check switches and enables (wouldn't cause crash)
 IF GVL.astAxes[bladeA].stStatus.bBwEnabled AND GVL.astAxes[bladeB].stStatus.bFwEnabled THEN
@@ -95,8 +99,8 @@ CASE iState OF
         iState:=0;
 	END_IF
     
-10://Everything calibrated, start intercepting absolute position moves
-//Check for absolute position move of virtual axis and issue move to blades if move executed
+10://Everything calibrated, monitor for commands to gap axis
+//MoveAbs command
 IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL.astAxes[gap].stControl.bExecute AND GVL.astAxes[gap].stStatus.bEnabled THEN
     fbCalcAngle(GapSize:=GVL.astAxes[gap].stConfig.fPosition);
     GVL.astAxes[bladeA].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
@@ -108,7 +112,32 @@ IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveAbsolute AND GVL
     GVL.astAxes[bladeB].stConfig.fVelocity:=GVL.astAxes[gap].stConfig.fVelocity;
     GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
 END_IF
-
+//Stop command
+IF GVL.astAxes[gap].stControl.bStop THEN
+    GVL.astAxes[bladeA].stControl.bStop:=TRUE;
+    GVL.astAxes[bladeB].stControl.bStop:=TRUE;
+END_IF
+//Velocity command
+IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveVelocity AND GVL.astAxes[gap].stControl.bExecute AND GVL.astAxes[gap].stStatus.bEnabled THEN
+    GVL.astAxes[bladeA].stControl.eCommand := E_MotionFunctions.eMoveVelocity;
+    GVL.astAxes[bladeA].stConfig.fVelocity:= -GVL.astAxes[gap].stConfig.fVelocity;
+    GVL.astAxes[bladeA].stControl.bExecute:=TRUE;
+    GVL.astAxes[bladeB].stControl.eCommand := E_MotionFunctions.eMoveVelocity;
+    GVL.astAxes[bladeB].stConfig.fVelocity:=GVL.astAxes[gap].stConfig.fVelocity;
+    GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
+END_IF
+//Relative command
+IF GVL.astAxes[gap].stControl.eCommand = E_MotionFunctions.eMoveRelative AND GVL.astAxes[gap].stControl.bExecute AND GVL.astAxes[gap].stStatus.bEnabled THEN
+    fbCalcAngle(GapSize:=GVL.astAxes[gap].stStatus.fActPosition + GVL.astAxes[gap].stConfig.fPosition);
+    GVL.astAxes[bladeA].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
+    GVL.astAxes[bladeA].stConfig.fPosition := fbCalcAngle.AngleBladeB;
+    GVL.astAxes[bladeA].stConfig.fVelocity:=GVL.astAxes[gap].stConfig.fVelocity;
+    GVL.astAxes[bladeA].stControl.bExecute:=TRUE;
+    GVL.astAxes[bladeB].stControl.eCommand := E_MotionFunctions.eMoveAbsolute;
+    GVL.astAxes[bladeB].stConfig.fPosition := fbCalcAngle.AngleBladeA;
+    GVL.astAxes[bladeB].stConfig.fVelocity:=GVL.astAxes[gap].stConfig.fVelocity;
+    GVL.astAxes[bladeB].stControl.bExecute:=TRUE;
+END_IF
 
 999: //ERROR STATE
     GVL.astAxes[gap].stControl.bEnable:= FALSE;
@@ -119,7 +148,7 @@ END_IF
     
 END_CASE
 
-IF GVL.astAxes[bladeA].stStatus.bError OR GVL.astAxes[bladeB].stStatus.bError THEN
+IF GVL.astAxes[bladeA].stStatus.bError OR GVL.astAxes[bladeB].stStatus.bError OR GVL.astAxes[gap].stStatus.bError THEN
     iState:=999;
 END_IF
 
@@ -128,10 +157,14 @@ END_IF
     <LineIds Name="FB_BarnDoors">
       <LineId Id="180" Count="1" />
       <LineId Id="20" Count="0" />
-      <LineId Id="43" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="223" Count="0" />
+      <LineId Id="222" Count="0" />
+      <LineId Id="44" Count="0" />
       <LineId Id="21" Count="2" />
       <LineId Id="45" Count="0" />
       <LineId Id="24" Count="2" />
+      <LineId Id="220" Count="1" />
       <LineId Id="108" Count="0" />
       <LineId Id="107" Count="0" />
       <LineId Id="110" Count="1" />
@@ -176,7 +209,19 @@ END_IF
       <LineId Id="74" Count="0" />
       <LineId Id="78" Count="10" />
       <LineId Id="72" Count="0" />
+      <LineId Id="190" Count="0" />
       <LineId Id="189" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="194" Count="1" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="200" Count="2" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="196" Count="1" />
+      <LineId Id="205" Count="0" />
+      <LineId Id="207" Count="9" />
+      <LineId Id="206" Count="0" />
       <LineId Id="130" Count="0" />
       <LineId Id="129" Count="0" />
       <LineId Id="131" Count="0" />

@@ -22,11 +22,26 @@ CLOSEDGAP : LREAL:=2.00;
 
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[AngleBladeA := RAD_TO_DEG(ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));
-AngleBladeB := RAD_TO_DEG(-ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));]]></ST>
+      <ST><![CDATA[IF GapSize<CLOSEDGAP THEN
+    AngleBladeA:=0;
+    AngleBladeB:=0;
+ELSIF GapSize > (2*BLADESIZE+CLOSEDGAP) THEN
+    AngleBladeA:=90;
+    AngleBladeB:=90;
+ELSE
+    AngleBladeA := RAD_TO_DEG(ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));
+    AngleBladeB := RAD_TO_DEG(-ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));  
+END_IF
+]]></ST>
     </Implementation>
     <LineIds Name="FB_CalculateAngle">
-      <LineId Id="59" Count="0" />
+      <LineId Id="81" Count="1" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="85" Count="1" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="83" Count="0" />
       <LineId Id="61" Count="0" />
     </LineIds>
   </POU>
