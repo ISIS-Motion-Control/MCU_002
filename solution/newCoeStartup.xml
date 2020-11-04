@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EtherCATMailbox>
+	<CoE>
+		<InitCmds>
+			<InitCmd>
+				<Transition>IP</Transition>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>61569</Index>
+				<SubIndex>1</SubIndex>
+				<Data>00001500</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>IP</Transition>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>4339</Index>
+				<SubIndex>5</SubIndex>
+				<Data>0100</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>PS</Transition>
+				<Comment><![CDATA[Maximal current]]></Comment>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>32784</Index>
+				<SubIndex>1</SubIndex>
+				<Data>0807</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>PS</Transition>
+				<Comment><![CDATA[Reduced current]]></Comment>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>32784</Index>
+				<SubIndex>2</SubIndex>
+				<Data>8403</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>PS</Transition>
+				<Comment><![CDATA[Nominal voltage]]></Comment>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>32784</Index>
+				<SubIndex>3</SubIndex>
+				<Data>c012</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>PS</Transition>
+				<Comment><![CDATA[Motor EMF]]></Comment>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>32784</Index>
+				<SubIndex>5</SubIndex>
+				<Data>0000</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>PS</Transition>
+				<Comment><![CDATA[Motor coil inductance]]></Comment>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>32784</Index>
+				<SubIndex>10</SubIndex>
+				<Data>4a01</Data>
+			</InitCmd>
+			<InitCmd>
+				<Transition>PS</Transition>
+				<Comment><![CDATA[Motor coil resistance]]></Comment>
+				<Timeout>0</Timeout>
+				<Ccs>1</Ccs>
+				<Index>32784</Index>
+				<SubIndex>4</SubIndex>
+				<Data>af00</Data>
+			</InitCmd>
+		</InitCmds>
+	</CoE>
+</EtherCATMailbox>

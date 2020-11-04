@@ -2314,9 +2314,7 @@ External Setpoint Generation:
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="16">
-				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff">
-					<ParameterChanged>25</ParameterChanged>
-				</EncPara>
+				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff"/>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
 					<Var>
@@ -2534,6 +2532,7 @@ External Setpoint Generation:
 				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
 				<PositionAreaControl Range="0.01"/>
 				<TargetPosControl Range="0.01" Time="0.1"/>
+				<BacklashCompensation Enable="true" Range="1.35"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -2541,6 +2540,7 @@ External Setpoint Generation:
 					<FilterTime TPos="0.2"/>
 					<SoftEndMinControl Range="-97"/>
 					<SoftEndMaxControl Range="18"/>
+					<ActPosCorrection Enable="true" Time="0.2"/>
 					<Inc RefMode="2" RefSoftSyncMask="#x0000ffff"/>
 				</EncPara>
 				<Vars VarGrpType="1">
@@ -2761,6 +2761,7 @@ External Setpoint Generation:
 				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
 				<PositionAreaControl Range="0.01"/>
 				<TargetPosControl Range="0.01" Time="0.1"/>
+				<BacklashCompensation Enable="true" Range="1.2"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
@@ -3656,9 +3657,7 @@ External Setpoint Generation:
 				<OtherSettings AllowMotionCmdToSlave="true"/>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="16">
-				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff">
-					<ParameterChanged>25</ParameterChanged>
-				</EncPara>
+				<EncPara ScaleFactorNumerator="1" ScaleFactorDenominator="10000" MaxCount="#x0000ffff"/>
 				<Vars VarGrpType="1">
 					<Name>Inputs</Name>
 					<Var>

@@ -29,6 +29,11 @@ VAR
     fbBarnDoor2 :   FB_BarnDoors;
     fbBarnDoor3 :   FB_BarnDoors;
     
+    //BACKLASH
+    fbBacklashAxis3 : MC_BacklashCompensation;
+    
+    
+    
     //demo test routine data
     fTargetPositions : ARRAY [1..8] OF LREAL;
     BLADE1A : INT:= 1;
@@ -55,6 +60,10 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[DEMO();
+
+fbBacklashAxis3.Enable:=TRUE;
+fbBacklashAxis3.Backlash:= 1.41; //was 1.25 need another 0.16
+fbBacklashAxis3(Axis:= GVL.astAxes[3].Axis);
 
 POSITION_RECOVERY();
 PROG();
@@ -322,8 +331,8 @@ GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
 
 GVL.astAxes[1].stConfig.fHomePosition:=0;
 GVL.astAxes[2].stConfig.fHomePosition:=0;
-GVL.astAxes[3].stConfig.fHomePosition:=-2.808;
-GVL.astAxes[4].stConfig.fHomePosition:=1.917;
+GVL.astAxes[3].stConfig.fHomePosition:=2.4; //was -2.4,
+GVL.astAxes[4].stConfig.fHomePosition:=-0.6; //was 0.6,
 GVL.astAxes[5].stConfig.fHomePosition:=0;
 GVL.astAxes[6].stConfig.fHomePosition:=0; //essentially the new position bias.
 
@@ -460,6 +469,7 @@ END_FOR]]></ST>
     <LineIds Name="MAIN">
       <LineId Id="772" Count="0" />
       <LineId Id="684" Count="0" />
+      <LineId Id="829" Count="3" />
       <LineId Id="505" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="81" Count="0" />
