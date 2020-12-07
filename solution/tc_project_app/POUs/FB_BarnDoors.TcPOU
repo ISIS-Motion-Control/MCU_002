@@ -26,19 +26,9 @@ END_VAR
     <Implementation>
       <ST><![CDATA[timeout.PT:=T#2S; //2second timeout to attempt rehomes
 timeout();
-//Geometry check
-(*Position values outside the allowable range defined by the blade geometry cannot be reached but will result in errors during calculation*)
 
-(* Have moved the limit checks to the calculateAngle functionblock. This is to allow the use of moverelatives
-//Check upper limit
-IF GVL.astAxes[gap].stConfig.fPosition > (2*fBladeSize+fClosedGap) THEN
-    GVL.astAxes[gap].stConfig.fPosition:= 2*fBladeSize+fClosedGap;
-END_IF
-//Check lower limit
-IF GVL.astAxes[gap].stConfig.fPosition < (fClosedGap) THEN
-    GVL.astAxes[gap].stConfig.fPosition:= fClosedGap;
-END_IF
-*)
+fbCalcAngle.BladeSize:=fBladeSize;
+fbCalcAngle.ClosedGap:=fClosedGap;
 
 
 //Check switches and enables (wouldn't cause crash)
@@ -156,15 +146,10 @@ END_IF
     </Implementation>
     <LineIds Name="FB_BarnDoors">
       <LineId Id="180" Count="1" />
-      <LineId Id="20" Count="0" />
-      <LineId Id="43" Count="0" />
-      <LineId Id="223" Count="0" />
-      <LineId Id="222" Count="0" />
-      <LineId Id="44" Count="0" />
-      <LineId Id="21" Count="2" />
-      <LineId Id="45" Count="0" />
-      <LineId Id="24" Count="2" />
-      <LineId Id="220" Count="1" />
+      <LineId Id="245" Count="0" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="221" Count="0" />
       <LineId Id="108" Count="0" />
       <LineId Id="107" Count="0" />
       <LineId Id="110" Count="1" />

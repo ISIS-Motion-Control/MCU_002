@@ -2529,11 +2529,13 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<Velo RefSearch="1" RefSync="0.2" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
 				<PositionAreaControl Range="0.01"/>
 				<TargetPosControl Range="0.01" Time="0.1"/>
 				<BacklashCompensation Enable="true" Range="1.35"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
+				<ParameterChanged>7</ParameterChanged>
+				<ParameterChanged>6</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">
@@ -2758,11 +2760,12 @@ External Setpoint Generation:
 			<AxisPara>
 				<General UnitName="Degree"/>
 				<Dynamic AccelerationMaximum="1500" DecelerationMaximum="1500" Acceleration="150" Deceleration="150" Jerk="225" OverrideType="4"/>
-				<Velo RefSearch="1" RefSync="1" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
+				<Velo RefSearch="1" RefSync="0.2" SlowManual="0.5" FastManual="1.5" Maximum="10"/>
 				<PositionAreaControl Range="0.01"/>
 				<TargetPosControl Range="0.01" Time="0.1"/>
 				<BacklashCompensation Enable="true" Range="1.2"/>
 				<OtherSettings AllowMotionCmdToSlave="true"/>
+				<ParameterChanged>7</ParameterChanged>
 			</AxisPara>
 			<Encoder Name="Enc" EncType="4">
 				<EncPara ScaleFactorNumerator="0.009" Inverse="true" MaxCount="#x0000ffff">

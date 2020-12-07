@@ -6,6 +6,8 @@ FUNCTION_BLOCK FB_CalculateAngle
 
 VAR_INPUT
 GapSize : LREAL;
+BladeSize : LREAL;
+ClosedGap : LREAL;
 
 END_VAR
 
@@ -17,20 +19,20 @@ END_VAR
 
 VAR
 
-BLADESIZE : LREAL:=62.94;	
-CLOSEDGAP : LREAL:=2.00;
+//BLADESIZE : LREAL:=62.94;	
+//CLOSEDGAP : LREAL:=2.00;
 
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF GapSize<CLOSEDGAP THEN
+      <ST><![CDATA[IF GapSize<ClosedGap THEN
     AngleBladeA:=0;
     AngleBladeB:=0;
-ELSIF GapSize > (2*BLADESIZE+CLOSEDGAP) THEN
+ELSIF GapSize > (2*BladeSize+ClosedGap) THEN
     AngleBladeA:=90;
     AngleBladeB:=90;
 ELSE
-    AngleBladeA := RAD_TO_DEG(ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));
-    AngleBladeB := RAD_TO_DEG(-ACOS((BLADESIZE + (CLOSEDGAP/2) - (GapSize/2))/BLADESIZE));  
+    AngleBladeA := RAD_TO_DEG(ACOS((BladeSize + (ClosedGap/2) - (GapSize/2))/BladeSize));
+    AngleBladeB := RAD_TO_DEG(-ACOS((BladeSize + (ClosedGap/2) - (GapSize/2))/BladeSize));  
 END_IF
 ]]></ST>
     </Implementation>

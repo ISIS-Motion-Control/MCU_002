@@ -31,6 +31,8 @@ VAR
     
     //BACKLASH
     fbBacklashAxis3 : MC_BacklashCompensation;
+    fBacklashTestVal : LREAL := 1.41;
+    bBacklash   : BOOL;
     
     
     
@@ -61,9 +63,9 @@ END_VAR
     <Implementation>
       <ST><![CDATA[DEMO();
 
-fbBacklashAxis3.Enable:=TRUE;
-fbBacklashAxis3.Backlash:= 1.41; //was 1.25 need another 0.16
-fbBacklashAxis3(Axis:= GVL.astAxes[3].Axis);
+//fbBacklashAxis3.Enable:= bBacklash;
+//fbBacklashAxis3.Backlash:= fBacklashTestVal; //was 1.25 need another 0.16
+//fbBacklashAxis3(Axis:= GVL.astAxes[3].Axis);
 
 POSITION_RECOVERY();
 PROG();
@@ -324,21 +326,21 @@ END_FOR
 
 GVL.astAxes[1].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
 GVL.astAxes[2].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
-GVL.astAxes[3].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
-GVL.astAxes[4].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+GVL.astAxes[3].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaFwdLimit;
+GVL.astAxes[4].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaBwdLimit;
 GVL.astAxes[5].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
 GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
 
 GVL.astAxes[1].stConfig.fHomePosition:=0;
 GVL.astAxes[2].stConfig.fHomePosition:=0;
-GVL.astAxes[3].stConfig.fHomePosition:=2.4; //was -2.4,
-GVL.astAxes[4].stConfig.fHomePosition:=-0.6; //was 0.6,
+GVL.astAxes[3].stConfig.fHomePosition:=-4.248; //was 2.8129,
+GVL.astAxes[4].stConfig.fHomePosition:=-3.501; //was -0.5349,
 GVL.astAxes[5].stConfig.fHomePosition:=0;
 GVL.astAxes[6].stConfig.fHomePosition:=0; //essentially the new position bias.
 
 
 fbBarnDoor1(bladeA:=1,bladeB:=2,gap:=8,fClosedGap:=2,fBladeSize:=62.94);
-fbBarnDoor2(bladeA:=3,bladeB:=4,gap:=9,fClosedGap:=2,fBladeSize:=62.94);
+fbBarnDoor2(bladeA:=3,bladeB:=4,gap:=9,fClosedGap:=1,fBladeSize:=62.94);
 fbBarnDoor3(bladeA:=5,bladeB:=6,gap:=10,fClosedGap:=2,fBladeSize:=62.94);]]></ST>
       </Implementation>
     </Action>
