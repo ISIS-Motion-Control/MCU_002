@@ -141,7 +141,9 @@ END_CASE
 IF GVL.astAxes[bladeA].stStatus.bError OR GVL.astAxes[bladeB].stStatus.bError OR GVL.astAxes[gap].stStatus.bError THEN
     iState:=999;
 END_IF
-
+IF NOT GVL.astAxes[bladeA].stStatus.bEnabled OR NOT GVL.astAxes[bladeB].stStatus.bEnabled THEN
+    iState:=0;
+END_IF
 ]]></ST>
     </Implementation>
     <LineIds Name="FB_BarnDoors">
@@ -218,6 +220,7 @@ END_IF
       <LineId Id="90" Count="0" />
       <LineId Id="127" Count="1" />
       <LineId Id="71" Count="0" />
+      <LineId Id="268" Count="1" />
       <LineId Id="9" Count="0" />
     </LineIds>
   </POU>

@@ -63,10 +63,6 @@ END_VAR
     <Implementation>
       <ST><![CDATA[DEMO();
 
-//fbBacklashAxis3.Enable:= bBacklash;
-//fbBacklashAxis3.Backlash:= fBacklashTestVal; //was 1.25 need another 0.16
-//fbBacklashAxis3(Axis:= GVL.astAxes[3].Axis);
-
 POSITION_RECOVERY();
 PROG();
 AXES();
@@ -318,30 +314,34 @@ END_IF]]></ST>
       <Implementation>
         <ST><![CDATA[(*MUON BARN DOORS*)
 (*This application uses a set position functionblock to update
-the gap size value of a virtual axis based on two real world barn door jaw blades.
+the gap size value of a virtual axis based on two real world barn door blades.
 The gap size is limited by the geometry of the jaws defined by the closed gap size and the blade size*)
+
+//All outputs powering limits turned on.
 FOR i:=1 TO 19 DO
     bSwPower[i]:= TRUE;
 END_FOR
 
-GVL.astAxes[1].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
-GVL.astAxes[2].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+//Select homing routine to use for each axis
+GVL.astAxes[1].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaFwdLimit;
+GVL.astAxes[2].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaBwdLimit;
 GVL.astAxes[3].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaFwdLimit;
 GVL.astAxes[4].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaBwdLimit;
-GVL.astAxes[5].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Fwd;
-GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToRef_Bwd;
+GVL.astAxes[5].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaFwdLimit;
+GVL.astAxes[6].stConfig.eHomeSeq:=E_HomingRoutines.eHomeToEncPulse_viaBwdLimit;
 
-GVL.astAxes[1].stConfig.fHomePosition:=0;
-GVL.astAxes[2].stConfig.fHomePosition:=0;
-GVL.astAxes[3].stConfig.fHomePosition:=-4.248; //was 2.8129,
-GVL.astAxes[4].stConfig.fHomePosition:=-3.501; //was -0.5349,
-GVL.astAxes[5].stConfig.fHomePosition:=0;
-GVL.astAxes[6].stConfig.fHomePosition:=0; //essentially the new position bias.
+//Set calibrated home position for each axis
+GVL.astAxes[1].stConfig.fHomePosition:=-11.189; //was -10.09  (-8.7)
+GVL.astAxes[2].stConfig.fHomePosition:=-2.495; //was 13.75 (12.2)
+GVL.astAxes[3].stConfig.fHomePosition:=-3.83; //was -3.19 (-4.19) (-2.55
+GVL.astAxes[4].stConfig.fHomePosition:=15.61; //was 14.26 (15.66)
+GVL.astAxes[5].stConfig.fHomePosition:=-10.097; //was -9.8
+GVL.astAxes[6].stConfig.fHomePosition:=8.55; //9.45 (9.43)
 
-
-fbBarnDoor1(bladeA:=1,bladeB:=2,gap:=8,fClosedGap:=2,fBladeSize:=62.94);
-fbBarnDoor2(bladeA:=3,bladeB:=4,gap:=9,fClosedGap:=1,fBladeSize:=62.94);
-fbBarnDoor3(bladeA:=5,bladeB:=6,gap:=10,fClosedGap:=2,fBladeSize:=62.94);]]></ST>
+//Call function blocks with blade numbers and gap geometry.
+fbBarnDoor1(bladeA:=1,bladeB:=2,gap:=8,fClosedGap:=1.10,fBladeSize:=64.4175); //New blade sizes taken from survey data with Tony Millington. BLADE SIZE WAS 62.94
+fbBarnDoor2(bladeA:=3,bladeB:=4,gap:=9,fClosedGap:=1.45,fBladeSize:=64.4475);
+fbBarnDoor3(bladeA:=5,bladeB:=6,gap:=10,fClosedGap:=1.49,fBladeSize:=64.4005);]]></ST>
       </Implementation>
     </Action>
     <Action Name="RESTORE_POSITIONS" Id="{0c7ee537-7bd9-4833-b428-c17cbb57e893}" FolderPath="POSITION_RECOVERY\">
@@ -470,8 +470,7 @@ END_FOR]]></ST>
     </Action>
     <LineIds Name="MAIN">
       <LineId Id="772" Count="0" />
-      <LineId Id="684" Count="0" />
-      <LineId Id="829" Count="3" />
+      <LineId Id="832" Count="0" />
       <LineId Id="505" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="81" Count="0" />
@@ -529,7 +528,12 @@ END_FOR]]></ST>
     <LineIds Name="MAIN.PROG">
       <LineId Id="3" Count="0" />
       <LineId Id="136" Count="2" />
-      <LineId Id="155" Count="15" />
+      <LineId Id="174" Count="1" />
+      <LineId Id="155" Count="2" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="158" Count="6" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="165" Count="5" />
       <LineId Id="149" Count="0" />
       <LineId Id="172" Count="0" />
       <LineId Id="171" Count="0" />
